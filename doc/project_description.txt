@@ -1,26 +1,25 @@
 Overview:
-Air-Hockey is a popular game for two competing players trying to score points in the opposing player's goal by indirect manipulation of the puck by mallet.
-The  players can move their mallets inside their half of the screen. The movement of the puck can be manipulated on the table by hitting it with a mallet.
-It is a mobile application utilizing both multi-touch capabilities as well as enabling multiple users to use the device simultaneously.
-
+	Air-Hockey is a popular game for two competing players trying to score points in the opposing player's goal by indirect manipulation of the puck by mallet.
+	The  players can move their mallets inside their half of the screen. The movement of the puck can be manipulated on the table by hitting it with a mallet.
+	It is a mobile application utilizing both multi-touch capabilities as well as enabling multiple users to use the device simultaneously.
 Features:
 	- puck moves are determined by bouncing off the walls and mallets
 	- simultaneous moving of the mallets by players
-	- mallets can be enlarged/dimished by pinch gesture
+	- mallets and goals can be enlarged/dimished by pinch gesture
 	- with double-finger swipe the player's goal can be moved left/right
 	- double-touch on a screen changes the physics of the puck
-
 Goals:
-
+	The main objective is to score points by making the puck move inside the goal of the opponent. The game is ended when the time is up/a player scores 7 points/never.
 Rules:
     - user has to get the puck into the goal of the other user
     - a user can use his mallet to interact with the puck only on 'his' side of the screen.
-User interaction:
-
+	- user can use the gestures to maximize their chances
 Interface:
+	The screen at the beginning is showing a table with two small goals at each side, two mallets for each player respectively and a puck in the middle.
+	At the verge of the screen, apart from goals, there are walls which bounce the puck like mallets do.
 
 Process sth:
 
 Mechanisms and solutions used:
 
-Summary
+Summary:
