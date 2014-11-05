@@ -4,6 +4,11 @@ The  players can move their mallets inside their half of the screen. The movemen
 It is a mobile application utilizing both multi-touch capabilities as well as enabling multiple users to use the device simultaneously.
 
 Features:
+	- puck moves are determined by bouncing off the walls and mallets
+	- simultaneous moving of the mallets by players
+	- mallets can be enlarged/dimished by pinch gesture
+	- with double-finger swipe the player's goal can be moved left/right
+	- double-touch on a screen changes the physics of the puck
 
 Goals:
 
