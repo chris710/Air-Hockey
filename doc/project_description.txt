@@ -1,0 +1,20 @@
+Overview:
+Air-Hockey is a popular game for two competing players trying to score points in the opposing player's goal by indirect manipulation of the puck by mallet.
+The  players can move their mallets inside their half of the screen. The movement of the puck can be manipulated on the table by hitting it with a mallet.
+It is a mobile application utilizing both multi-touch capabilities as well as enabling multiple users to use the device simultaneously.
+
+Features:
+
+Goals:
+
+Rules:
+
+User interaction:
+
+Interface:
+
+Process sth:
+
+Mechanisms and solutions used:
+
+Summary
