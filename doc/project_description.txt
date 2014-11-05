@@ -8,12 +8,17 @@ Features:
 	- mallets and goals can be enlarged/dimished by pinch gesture
 	- with double-finger swipe the player's goal can be moved left/right
 	- double-touch on a screen changes the physics of the puck
+    
 Goals:
 	The main objective is to score points by making the puck move inside the goal of the opponent. The game is ended when the time is up/a player scores 7 points/never.
+    
 Rules:
-    - user has to get the puck into the goal of the other user
-    - a user can use his mallet to interact with the puck only on 'his' side of the screen.
-	- user can use the gestures to maximize their chances
+	- user has to get the puck into the goal of the other user
+    - the user interacts with the puck with a mallet, which is operated with the finger of the user
+    - user can use the gestures to maximize their chances   
+    - the user can decide before the game how the winner will be determined. the user can decide between a time limit, after which the game will be stopped and the person with the highest amount of goals will win.
+    Or a goal limit, so the winner will be the person, who has the decided amount of goals first.
+    
 Interface:
 	The screen at the beginning is showing a table with two small goals at each side, two mallets for each player respectively and a puck in the middle.
 	At the verge of the screen, apart from goals, there are walls which bounce the puck like mallets do.
