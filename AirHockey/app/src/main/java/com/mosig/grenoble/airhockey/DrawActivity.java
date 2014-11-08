@@ -159,16 +159,6 @@ public class DrawActivity extends Activity {
                             }
                         }
 
-                        /*for(int i = 0; i<mFrame.getChildCount(); ++i) {
-                            BubbleView bubbleNew = (BubbleView) mFrame.getChildAt(i);
-                            if(bubbleNew.intersects(event1.getRawX(),event1.getRawY())) {
-                                bubbleNew.deflect(velocityX,velocityY);
-                                return true;
-                            }
-                        }*/
-
-
-
                         return false;
 
                     }
@@ -183,30 +173,6 @@ public class DrawActivity extends Activity {
                         // TODO - Implement onSingleTapConfirmed actions.
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
-
-                        /*int childCount = mFrame.getChildCount();
-                        float y = event.getRawX();
-                        float x = event.getRawY();
-                        int childIdx;
-                        boolean createNew = false;
-
-                        for (childIdx = 0; childIdx < childCount; childIdx++) {
-                            BubbleView bubble = (BubbleView) mFrame.getChildAt(childIdx);
-                            if(bubble.intersects(x, y))
-                            {
-                                bubble.stop(true);
-
-                            }
-                            else
-                            {
-                                createNew = true;
-                            }
-
-                        }
-                        BubbleView mBubble = new BubbleView(mFrame.getContext(), x, y);
-                        mFrame.addView(mBubble);
-                        mBubble.start();
-                        childCount = mFrame.getChildCount();*/
 
 
                         for(int i=0;i<mFrame.getChildCount(); ++i) {
@@ -342,7 +308,6 @@ public class DrawActivity extends Activity {
             }
 
             // TODO - create the scaled bitmap using size set above
-            //mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, false);
             mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, true);
 
         }
