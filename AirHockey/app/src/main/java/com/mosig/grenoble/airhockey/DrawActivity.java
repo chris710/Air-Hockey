@@ -139,13 +139,33 @@ public class DrawActivity extends Activity {
                         // TODO - Implement onFling actions.
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
-                        for(int i = 0; i<mFrame.getChildCount(); ++i) {
+
+                        //count of the number of Views in mFrame
+                        int childCount = mFrame.getChildCount();
+                        //location of the tap event
+                        float x = event1.getRawX();
+                        float y = event1.getRawY();
+                        //get the position of the child Views in mFrame
+                        //BubbleView mBubble = (BubbleView) mFrame.getChildAt(childCount);
+                        //get the position of the new Bubble which matches the tap position
+                        //BubbleView newBubble = new BubbleView(mFrame.getContext(),x,y);
+
+                        for (int i = 0; i < childCount; i++) {
+                            // If the tap location overlaps an existing bubble and we should “pop” it
+                            BubbleView flingBubble = (BubbleView) mFrame.getChildAt(i);
+                            if (flingBubble.intersects(x, y)) {
+                                flingBubble.deflect(velocityX, velocityY);
+                                return true;
+                            }
+                        }
+
+                        /*for(int i = 0; i<mFrame.getChildCount(); ++i) {
                             BubbleView bubbleNew = (BubbleView) mFrame.getChildAt(i);
                             if(bubbleNew.intersects(event1.getRawX(),event1.getRawY())) {
                                 bubbleNew.deflect(velocityX,velocityY);
                                 return true;
                             }
-                        }
+                        }*/
 
 
 
@@ -163,6 +183,32 @@ public class DrawActivity extends Activity {
                         // TODO - Implement onSingleTapConfirmed actions.
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
+
+                        /*int childCount = mFrame.getChildCount();
+                        float y = event.getRawX();
+                        float x = event.getRawY();
+                        int childIdx;
+                        boolean createNew = false;
+
+                        for (childIdx = 0; childIdx < childCount; childIdx++) {
+                            BubbleView bubble = (BubbleView) mFrame.getChildAt(childIdx);
+                            if(bubble.intersects(x, y))
+                            {
+                                bubble.stop(true);
+
+                            }
+                            else
+                            {
+                                createNew = true;
+                            }
+
+                        }
+                        BubbleView mBubble = new BubbleView(mFrame.getContext(), x, y);
+                        mFrame.addView(mBubble);
+                        mBubble.start();
+                        childCount = mFrame.getChildCount();*/
+
+
                         for(int i=0;i<mFrame.getChildCount(); ++i) {
                             BubbleView bubbleNew = (BubbleView) mFrame.getChildAt(i);
                             if(bubbleNew.intersects(event.getX(), event.getY())) {
@@ -185,9 +231,6 @@ public class DrawActivity extends Activity {
     public boolean onTouchEvent(MotionEvent event) {
 
         // TODO - delegate the touch to the gestureDetector
-
-
-
         return mGestureDetector.onTouchEvent(event);
 
     }
@@ -198,12 +241,6 @@ public class DrawActivity extends Activity {
         // TODO - Release all SoundPool resources
         mSoundPool.unload(mSoundID);
         mSoundPool=null;
-
-
-
-
-
-
 
         super.onPause();
     }
@@ -253,15 +290,10 @@ public class DrawActivity extends Activity {
         private void setRotation(Random r) {
 
             if (speedMode == RANDOM) {
-
                 // TODO - set rotation in range [1..3]
                 mDRotate = r.nextInt(3)+1;
-
-
             } else {
-
                 mDRotate = 0;
-
             }
         }
 
@@ -290,11 +322,8 @@ public class DrawActivity extends Activity {
                     // Limit movement speed in the x and y
                     // direction to [-3..3].
 
-
                     mDx=r.nextInt(7)-3;
                     mDy=r.nextInt(7)-3;
-
-
 
             }
         }
@@ -313,7 +342,9 @@ public class DrawActivity extends Activity {
             }
 
             // TODO - create the scaled bitmap using size set above
-            mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, false);
+            //mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, false);
+            mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, true);
+
         }
 
         // Start moving the BubbleView & updating the display
@@ -335,10 +366,11 @@ public class DrawActivity extends Activity {
                     // stop the BubbleView's Worker Thread.
                     // Otherwise, request that the BubbleView be redrawn.
                     if(BubbleView.this.moveWhileOnScreen()) {
-                        BubbleView.this.stop(false);
-                    } else {
                         BubbleView.this.postInvalidate();
                         mMoverFuture.isDone();
+                    } else {
+                        BubbleView.this.stop(false);
+
                     }
 
 
@@ -401,8 +433,8 @@ public class DrawActivity extends Activity {
 
             //TODO - set mDx and mDy to be the new velocities divided by the REFRESH_RATE
 
-            mDx = velocityX/REFRESH_RATE;
-            mDy = velocityY/REFRESH_RATE;
+            mDx = (float)velocityX/REFRESH_RATE;
+            mDy = (float)velocityY/REFRESH_RATE;
 
         }
 
@@ -418,7 +450,9 @@ public class DrawActivity extends Activity {
 
 
             // TODO Rotate the canvas by current rotation
-            canvas.rotate(mDRotate, mXPos+mScaledBitmapWidth/2, mYPos+mScaledBitmapWidth/2);
+            //canvas.rotate(mDRotate, mXPos+mScaledBitmapWidth/2, mYPos+mScaledBitmapWidth/2);
+            canvas.rotate(mRotate, mXPos+mScaledBitmapWidth/2 , mYPos+mScaledBitmapWidth/2);
+
 
 
             // TODO - draw the bitmap at it's new location
