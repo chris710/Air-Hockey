@@ -150,14 +150,14 @@ public class DrawActivity extends Activity {
                         //get the position of the new Bubble which matches the tap position
                         //BubbleView newBubble = new BubbleView(mFrame.getContext(),x,y);
 
-                        for (int i = 0; i < childCount; i++) {
+                        /*for (int i = 0; i < childCount; i++) {
                             // If the tap location overlaps an existing bubble and we should “pop” it
                             BubbleView flingBubble = (BubbleView) mFrame.getChildAt(i);
                             if (flingBubble.intersects(x, y)) {
                                 flingBubble.deflect(velocityX, velocityY);
                                 return true;
                             }
-                        }
+                        }*/
 
                         return false;
 
@@ -178,7 +178,7 @@ public class DrawActivity extends Activity {
                         for(int i=0;i<mFrame.getChildCount(); ++i) {
                             BubbleView bubbleNew = (BubbleView) mFrame.getChildAt(i);
                             if(bubbleNew.intersects(event.getX(), event.getY())) {
-                                bubbleNew.stop(true);
+                                //bubbleNew.stop(true);
                                 return true;
                             }
                         }
@@ -241,13 +241,13 @@ public class DrawActivity extends Activity {
 
             // Adjust position to center the bubble under user's finger
             mXPos = x - mScaledBitmapWidth / 2;
-            mYPos = y - mScaledBitmapWidth / 2;
+            mYPos = y - mScaledBitmapWidth;// / 2;
 
             // Set the BubbleView's speed and direction
             setSpeedAndDirection(r);
 
             // Set the BubbleView's rotation
-            setRotation(r);
+            //setRotation(r);
 
             mPainter.setAntiAlias(true);
 
@@ -303,7 +303,7 @@ public class DrawActivity extends Activity {
             } else {
 
                 //TODO - set scaled bitmap size in range [1..3] * BITMAP_SIZE
-                mScaledBitmapWidth = (r.nextInt(3)+1)*	BITMAP_SIZE;
+                mScaledBitmapWidth = 2/*(r.nextInt(3)+1)*/*	BITMAP_SIZE;
 
             }
 
