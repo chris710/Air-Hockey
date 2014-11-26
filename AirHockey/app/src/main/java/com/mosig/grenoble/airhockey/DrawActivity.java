@@ -48,6 +48,7 @@ public class DrawActivity extends Activity {
 
     // Display dimensions
     private int mDisplayWidth, mDisplayHeight;
+    int scale;
 
     // Sound variables
 
@@ -118,8 +119,28 @@ public class DrawActivity extends Activity {
             // Get the size of the display so this view knows where borders are
             mDisplayWidth = mFrame.getWidth();
             mDisplayHeight = mFrame.getHeight();
+            scale = mDisplayWidth/320;
+            initObjects();
 
         }
+    }
+
+    /**************
+     *  @param
+     *
+     */
+    private void initObjects(){
+
+        // Create Mallets and Puck
+        MalletView Mallet1 = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/4);
+        mFrame.addView(Mallet1);
+        Mallet1.start();
+        MalletView Mallet2 = new MalletView(getApplicationContext(),mDisplayWidth/2,3*mDisplayHeight/4);
+        mFrame.addView(Mallet2);
+        Mallet2.start();
+        MalletView Puck = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/2);
+        mFrame.addView(Puck);
+        Puck.start();
     }
 
     // Set up GestureDetector
@@ -129,8 +150,8 @@ public class DrawActivity extends Activity {
 
                 new GestureDetector.SimpleOnGestureListener() {
 
-                    // If a fling gesture starts on a BubbleView then change the
-                    // BubbleView's velocity
+                    // If a fling gesture starts on a MalletView then change the
+                    // MalletView's velocity
 
                     @Override
                     public boolean onFling(MotionEvent event1, MotionEvent event2,
@@ -141,18 +162,18 @@ public class DrawActivity extends Activity {
                         // ViewGroup.getChildCount() method
 
                         //count of the number of Views in mFrame
-                        int childCount = mFrame.getChildCount();
+                        //int childCount = mFrame.getChildCount();
                         //location of the tap event
                         float x = event1.getRawX();
                         float y = event1.getRawY();
                         //get the position of the child Views in mFrame
-                        //BubbleView mBubble = (BubbleView) mFrame.getChildAt(childCount);
+                        //MalletView mBubble = (MalletView) mFrame.getChildAt(childCount);
                         //get the position of the new Bubble which matches the tap position
-                        //BubbleView newBubble = new BubbleView(mFrame.getContext(),x,y);
+                        //MalletView newBubble = new MalletView(mFrame.getContext(),x,y);
 
                         /*for (int i = 0; i < childCount; i++) {
                             // If the tap location overlaps an existing bubble and we should “pop” it
-                            BubbleView flingBubble = (BubbleView) mFrame.getChildAt(i);
+                            MalletView flingBubble = (MalletView) mFrame.getChildAt(i);
                             if (flingBubble.intersects(x, y)) {
                                 flingBubble.deflect(velocityX, velocityY);
                                 return true;
@@ -163,8 +184,8 @@ public class DrawActivity extends Activity {
 
                     }
 
-                    // If a single tap intersects a BubbleView, then pop the BubbleView
-                    // Otherwise, create a new BubbleView at the tap's location and add
+                    // If a single tap intersects a MalletView, then pop the MalletView
+                    // Otherwise, create a new MalletView at the tap's location and add
                     // it to mFrame. You can get all views from mFrame with ViewGroup.getChildAt()
 
                     @Override
@@ -174,17 +195,14 @@ public class DrawActivity extends Activity {
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
 
-
-                        for(int i=0;i<mFrame.getChildCount(); ++i) {
-                            BubbleView bubbleNew = (BubbleView) mFrame.getChildAt(i);
+                        //popping bubbles - deleted
+                        /*for(int i=0;i<mFrame.getChildCount(); ++i) {
+                            MalletView bubbleNew = (MalletView) mFrame.getChildAt(i);
                             if(bubbleNew.intersects(event.getX(), event.getY())) {
-                                //bubbleNew.stop(true);
+                                bubbleNew.stop(true);
                                 return true;
                             }
-                        }
-                        BubbleView newBubble = new BubbleView(getApplicationContext(),event.getX(),event.getY());
-                        mFrame.addView(newBubble);
-                        newBubble.start();
+                        }*/
 
 
 
@@ -211,11 +229,11 @@ public class DrawActivity extends Activity {
         super.onPause();
     }
 
-    // BubbleView is a View that displays a bubble.
+    // MalletView is a View that displays a bubble.
     // This class handles animating, drawing, popping amongst other actions.
-    // A new BubbleView is created for each bubble on the display
+    // A new MalletView is created for each bubble on the display
 
-    private class BubbleView extends View {
+    private class MalletView extends View {
 
         private static final int BITMAP_SIZE = 64;
         private static final int REFRESH_RATE = 40;
@@ -228,7 +246,7 @@ public class DrawActivity extends Activity {
         private float mXPos, mYPos, mDx, mDy;
         private long mRotate, mDRotate;
 
-        public BubbleView(Context context, float x, float y) {
+        public MalletView(Context context, float x, float y) {
             super(context);
             log("Creating Bubble at: x:" + x + " y:" + y);
 
@@ -236,17 +254,17 @@ public class DrawActivity extends Activity {
             // randomize size, rotation, speed and direction
             Random r = new Random();
 
-            // Creates the bubble bitmap for this BubbleView
+            // Creates the bubble bitmap for this MalletView
             createScaledBitmap(r);
 
             // Adjust position to center the bubble under user's finger
             mXPos = x - mScaledBitmapWidth / 2;
-            mYPos = y - mScaledBitmapWidth;// / 2;
+            mYPos = y - mScaledBitmapWidth / 2;
 
-            // Set the BubbleView's speed and direction
-            setSpeedAndDirection(r);
+            // Set the MalletView's speed and direction
+            //setSpeedAndDirection(r);
 
-            // Set the BubbleView's rotation
+            // Set the MalletView's rotation
             //setRotation(r);
 
             mPainter.setAntiAlias(true);
@@ -303,7 +321,7 @@ public class DrawActivity extends Activity {
             } else {
 
                 //TODO - set scaled bitmap size in range [1..3] * BITMAP_SIZE
-                mScaledBitmapWidth = 2/*(r.nextInt(3)+1)*/*	BITMAP_SIZE;
+                mScaledBitmapWidth = /*(r.nextInt(3)+1)*/	scale * BITMAP_SIZE;
 
             }
 
@@ -312,7 +330,7 @@ public class DrawActivity extends Activity {
 
         }
 
-        // Start moving the BubbleView & updating the display
+        // Start moving the MalletView & updating the display
         private void start() {
 
             // Creates a WorkerThread
@@ -326,18 +344,16 @@ public class DrawActivity extends Activity {
                 @Override
                 public void run() {
                     // TODO - implement movement logic.
-                    // Each time this method is run the BubbleView should
-                    // move one step. If the BubbleView exits the display,
-                    // stop the BubbleView's Worker Thread.
-                    // Otherwise, request that the BubbleView be redrawn.
-                    if(BubbleView.this.moveWhileOnScreen()) {
-                        BubbleView.this.postInvalidate();
+                    // Each time this method is run the MalletView should
+                    // move one step. If the MalletView exits the display,
+                    // stop the MalletView's Worker Thread.
+                    // Otherwise, request that the MalletView be redrawn.
+                    if(MalletView.this.moveWhileOnScreen()) {
+                        MalletView.this.postInvalidate();
                         mMoverFuture.isDone();
-                    } else {
-                        BubbleView.this.stop(false);
-
+                    //} else {
+                        //MalletView.this.stop(false);
                     }
-
 
                 }
             }, 0, REFRESH_RATE, TimeUnit.MILLISECONDS);
@@ -345,7 +361,7 @@ public class DrawActivity extends Activity {
 
         private synchronized boolean intersects(float x, float y) {
 
-            // TODO - Return true if the BubbleView intersects position (x,y)
+            // TODO - Return true if the MalletView intersects position (x,y)
             //mXPos+=mDx;
             //mYPos+=mDy;
             //return isOutOfView();
@@ -359,31 +375,31 @@ public class DrawActivity extends Activity {
 
         // Cancel the Bubble's movement
         // Remove Bubble from mFrame
-        // Play pop sound if the BubbleView was popped
+        // Play pop sound if the MalletView was popped
 
         private void stop(final boolean popped) {
 
             if (null != mMoverFuture && mMoverFuture.cancel(true)) {
 
                 // This work will be performed on the UI Thread
-                //final BubbleView mView = this;
+                //final MalletView mView = this;
                 mFrame.post(new Runnable() {
                     @Override
                     public void run() {
 
-                        // TODO - Remove the BubbleView from mFrame
-                        mFrame.removeView(BubbleView.this);
+                        // TODO - Remove the MalletView from mFrame
+                        mFrame.removeView(MalletView.this);
 
 
-
-                        if (popped) {
+                        //no sound needed
+                        /*if (popped) {
                             log("Pop!");
 
                             // TODO - If the bubble was popped by user,
                             // play the popping sound
                             mSoundPool.play(mSoundID, mStreamVolume, mStreamVolume,0,0,1f);
 
-                        }
+                        }*/
 
                         log("Bubble removed from view!");
 
@@ -433,8 +449,8 @@ public class DrawActivity extends Activity {
 
         private synchronized boolean moveWhileOnScreen() {
 
-            // TODO - Move the BubbleView
-            // Returns true if the BubbleView has exited the screen
+            // TODO - Move the MalletView
+            // Returns true if the MalletView has exited the screen
 
             mXPos+=mDx;
             mYPos+=mDy;
@@ -447,13 +463,14 @@ public class DrawActivity extends Activity {
 
         private boolean isOutOfView() {
 
-            // TODO - Return true if the BubbleView has exited the screen
+            // TODO - Return true if the MalletView has exited the screen
             if(mXPos<0-mScaledBitmapWidth || mXPos>mScaledBitmapWidth || mYPos<0-mScaledBitmapWidth
                     || mYPos>mScaledBitmapWidth) {
                 return true;
             } else {
-                //BubbleView.this.stop(true);
-                //BubbleView.this.setVisibility(GONE);
+                //popping - deleted
+                //MalletView.this.stop(true);
+                //MalletView.this.setVisibility(GONE);
                 return false;
             }
 
