@@ -91,22 +91,22 @@ public class DrawActivity extends Activity {
                 .getStreamVolume(AudioManager.STREAM_MUSIC)
                 / mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-        // TODO - make a new SoundPool, allowing up to 10 streams
+        //  make a new SoundPool, allowing up to 10 streams
         mSoundPool = new SoundPool(10,AudioManager.STREAM_MUSIC,0);
 
-        // TODO - set a SoundPool OnLoadCompletedListener that calls setupGestureDetector()
+        //  set a SoundPool OnLoadCompletedListener that calls setupGestureDetector()
         mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                // TODO Auto-generated method stub
+                //  Auto-generated method stub
                 if(0==status){
                     setupGestureDetector();
                 }
             }
         });
 
-        // TODO - load the sound from res/raw/bubble_pop.wav
+        //  load the sound from res/raw/bubble_pop.wav
         mSoundID = mSoundPool.load(this, R.raw.bubble_pop,1);
 
     }
@@ -132,13 +132,13 @@ public class DrawActivity extends Activity {
     private void initObjects(){
 
         // Create Mallets and Puck
-        MalletView Mallet1 = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/4);
+        MalletView Mallet1 = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/4, mBitmap, mFrame);
         mFrame.addView(Mallet1);
         Mallet1.start();
-        MalletView Mallet2 = new MalletView(getApplicationContext(),mDisplayWidth/2,3*mDisplayHeight/4);
+        MalletView Mallet2 = new MalletView(getApplicationContext(),mDisplayWidth/2,3*mDisplayHeight/4, mBitmap, mFrame);
         mFrame.addView(Mallet2);
         Mallet2.start();
-        MalletView Puck = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/2);
+        MalletView Puck = new MalletView(getApplicationContext(),mDisplayWidth/2,mDisplayHeight/2, mBitmap, mFrame);
         mFrame.addView(Puck);
         Puck.start();
     }
@@ -157,7 +157,7 @@ public class DrawActivity extends Activity {
                     public boolean onFling(MotionEvent event1, MotionEvent event2,
                                            float velocityX, float velocityY) {
 
-                        // TODO - Implement onFling actions.
+                        //  Implement onFling actions.
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
 
@@ -191,7 +191,7 @@ public class DrawActivity extends Activity {
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent event) {
 
-                        // TODO - Implement onSingleTapConfirmed actions.
+                        //  Implement onSingleTapConfirmed actions.
                         // You can get all Views in mFrame using the
                         // ViewGroup.getChildCount() method
 
@@ -214,7 +214,7 @@ public class DrawActivity extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        // TODO - delegate the touch to the gestureDetector
+        //  delegate the touch to the gestureDetector
         return mGestureDetector.onTouchEvent(event);
 
     }
@@ -222,260 +222,14 @@ public class DrawActivity extends Activity {
     @Override
     protected void onPause() {
 
-        // TODO - Release all SoundPool resources
+        //  Release all SoundPool resources
         mSoundPool.unload(mSoundID);
         mSoundPool=null;
 
         super.onPause();
     }
 
-    // MalletView is a View that displays a bubble.
-    // This class handles animating, drawing, popping amongst other actions.
-    // A new MalletView is created for each bubble on the display
 
-    private class MalletView extends View {
-
-        private static final int BITMAP_SIZE = 64;
-        private static final int REFRESH_RATE = 40;
-        private final Paint mPainter = new Paint();
-        private ScheduledFuture<?> mMoverFuture;
-        private int mScaledBitmapWidth;
-        private Bitmap mScaledBitmap;
-
-        // location, speed and direction of the bubble
-        private float mXPos, mYPos, mDx, mDy;
-        private long mRotate, mDRotate;
-
-        public MalletView(Context context, float x, float y) {
-            super(context);
-            log("Creating Bubble at: x:" + x + " y:" + y);
-
-            // Create a new random number generator to
-            // randomize size, rotation, speed and direction
-            Random r = new Random();
-
-            // Creates the bubble bitmap for this MalletView
-            createScaledBitmap(r);
-
-            // Adjust position to center the bubble under user's finger
-            mXPos = x - mScaledBitmapWidth / 2;
-            mYPos = y - mScaledBitmapWidth / 2;
-
-            // Set the MalletView's speed and direction
-            //setSpeedAndDirection(r);
-
-            // Set the MalletView's rotation
-            //setRotation(r);
-
-            mPainter.setAntiAlias(true);
-
-        }
-
-        private void setRotation(Random r) {
-
-            if (speedMode == RANDOM) {
-                // TODO - set rotation in range [1..3]
-                mDRotate = r.nextInt(3)+1;
-            } else {
-                mDRotate = 0;
-            }
-        }
-
-        private void setSpeedAndDirection(Random r) {
-
-            // Used by test cases
-            switch (speedMode) {
-
-                case SINGLE:
-
-                    // Fixed speed
-                    mDx = 10;
-                    mDy = 10;
-                    break;
-
-                case STILL:
-
-                    // No speed
-                    mDx = 0;
-                    mDy = 0;
-                    break;
-
-                default:
-
-                    // TODO - Set movement direction and speed
-                    // Limit movement speed in the x and y
-                    // direction to [-3..3].
-
-                    mDx=r.nextInt(7)-3;
-                    mDy=r.nextInt(7)-3;
-
-            }
-        }
-
-        private void createScaledBitmap(Random r) {
-
-            if (speedMode != RANDOM) {
-
-                mScaledBitmapWidth = BITMAP_SIZE * 3;
-
-            } else {
-
-                //TODO - set scaled bitmap size in range [1..3] * BITMAP_SIZE
-                mScaledBitmapWidth = /*(r.nextInt(3)+1)*/	scale * BITMAP_SIZE;
-
-            }
-
-            // TODO - create the scaled bitmap using size set above
-            mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, true);
-
-        }
-
-        // Start moving the MalletView & updating the display
-        private void start() {
-
-            // Creates a WorkerThread
-            ScheduledExecutorService executor = Executors
-                    .newScheduledThreadPool(1);
-
-            // Execute the run() in Worker Thread every REFRESH_RATE
-            // milliseconds
-            // Save reference to this job in mMoverFuture
-            mMoverFuture = executor.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    // TODO - implement movement logic.
-                    // Each time this method is run the MalletView should
-                    // move one step. If the MalletView exits the display,
-                    // stop the MalletView's Worker Thread.
-                    // Otherwise, request that the MalletView be redrawn.
-                    if(MalletView.this.moveWhileOnScreen()) {
-                        MalletView.this.postInvalidate();
-                        mMoverFuture.isDone();
-                    //} else {
-                        //MalletView.this.stop(false);
-                    }
-
-                }
-            }, 0, REFRESH_RATE, TimeUnit.MILLISECONDS);
-        }
-
-        private synchronized boolean intersects(float x, float y) {
-
-            // TODO - Return true if the MalletView intersects position (x,y)
-            //mXPos+=mDx;
-            //mYPos+=mDy;
-            //return isOutOfView();
-            if(((mXPos<=x) && (x<=mXPos+mScaledBitmapWidth)) &&
-                    ((mYPos<=y) && (y<=mYPos+mScaledBitmapWidth))) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        // Cancel the Bubble's movement
-        // Remove Bubble from mFrame
-        // Play pop sound if the MalletView was popped
-
-        private void stop(final boolean popped) {
-
-            if (null != mMoverFuture && mMoverFuture.cancel(true)) {
-
-                // This work will be performed on the UI Thread
-                //final MalletView mView = this;
-                mFrame.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        // TODO - Remove the MalletView from mFrame
-                        mFrame.removeView(MalletView.this);
-
-
-                        //no sound needed
-                        /*if (popped) {
-                            log("Pop!");
-
-                            // TODO - If the bubble was popped by user,
-                            // play the popping sound
-                            mSoundPool.play(mSoundID, mStreamVolume, mStreamVolume,0,0,1f);
-
-                        }*/
-
-                        log("Bubble removed from view!");
-
-                    }
-                });
-            }
-        }
-
-        // Change the Bubble's speed and direction
-        private synchronized void deflect(float velocityX, float velocityY) {
-            log("velocity X:" + velocityX + " velocity Y:" + velocityY);
-
-            //TODO - set mDx and mDy to be the new velocities divided by the REFRESH_RATE
-
-            mDx = (float)velocityX/REFRESH_RATE;
-            mDy = (float)velocityY/REFRESH_RATE;
-
-        }
-
-        // Draw the Bubble at its current location
-        @Override
-        protected synchronized void onDraw(Canvas canvas) {
-
-            // TODO - save the canvas
-            canvas.save();
-
-            // TODO - increase the rotation of the original image by mDRotate
-            mRotate+=mDRotate;
-
-
-            // TODO Rotate the canvas by current rotation
-            //canvas.rotate(mDRotate, mXPos+mScaledBitmapWidth/2, mYPos+mScaledBitmapWidth/2);
-            canvas.rotate(mRotate, mXPos+mScaledBitmapWidth/2 , mYPos+mScaledBitmapWidth/2);
-
-
-
-            // TODO - draw the bitmap at it's new location
-            canvas.drawBitmap(mScaledBitmap, mXPos, mYPos, mPainter);
-
-
-            // TODO - restore the canvas
-            canvas.restore();
-
-
-        }
-
-
-        private synchronized boolean moveWhileOnScreen() {
-
-            // TODO - Move the MalletView
-            // Returns true if the MalletView has exited the screen
-
-            mXPos+=mDx;
-            mYPos+=mDy;
-
-            return isOutOfView();/* mXPos<0 -mScaledBitmapWidth || mXPos > mScaledBitmapWidth
-					|| mYPos<0-mScaledBitmapWidth || mYPos>mScaledBitmapWidth)*/
-
-
-        }
-
-        private boolean isOutOfView() {
-
-            // TODO - Return true if the MalletView has exited the screen
-            if(mXPos<0-mScaledBitmapWidth || mXPos>mScaledBitmapWidth || mYPos<0-mScaledBitmapWidth
-                    || mYPos>mScaledBitmapWidth) {
-                return true;
-            } else {
-                //popping - deleted
-                //MalletView.this.stop(true);
-                //MalletView.this.setVisibility(GONE);
-                return false;
-            }
-
-        }
-    }
 
 
     @Override
