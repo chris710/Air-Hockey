@@ -3,6 +3,7 @@ package com.mosig.grenoble.airhockey;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.Menu;
@@ -43,9 +44,9 @@ import java.util.concurrent.TimeUnit;
         private int mScaledBitmapWidth;
         private Bitmap mScaledBitmap;
 
-    // Bubble image
-    private Bitmap mBitmap;
-    private RelativeLayout mFrame;
+    // for viewing? TODO
+    /*private Bitmap mBitmap;
+    private RelativeLayout mFrame;*/
 
         // location, speed and direction of the bubble
         private float mXPos, mYPos, mDx, mDy;
@@ -57,8 +58,8 @@ import java.util.concurrent.TimeUnit;
         public MalletView(Context context, float x, float y, Bitmap bitmap, RelativeLayout frame ) {
             super(context);
             log("Creating Bubble at: x:" + x + " y:" + y);
-            mBitmap = bitmap;
-            mFrame = frame;
+            /*mBitmap = bitmap;
+            mFrame = frame;*/
             // Create a new random number generator to
             // randomize size, rotation, speed and direction
             Random r = new Random();
@@ -138,7 +139,7 @@ import java.util.concurrent.TimeUnit;
             }
 
             //  create the scaled bitmap using size set above
-            mScaledBitmap = Bitmap.createScaledBitmap(mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, true);
+            mScaledBitmap = Bitmap.createScaledBitmap(DrawActivity.mBitmap, mScaledBitmapWidth, mScaledBitmapWidth, true);
 
         }
 
@@ -195,12 +196,12 @@ import java.util.concurrent.TimeUnit;
 
                 // This work will be performed on the UI Thread
                 //final MalletView mView = this;
-                mFrame.post(new Runnable() {
+                DrawActivity.mFrame.post(new Runnable() {
                     @Override
                     public void run() {
 
                         //  Remove the MalletView from mFrame
-                        mFrame.removeView(MalletView.this);
+                        DrawActivity.mFrame.removeView(MalletView.this);
 
 
                         //no sound needed
@@ -249,7 +250,10 @@ import java.util.concurrent.TimeUnit;
 
 
             //  draw the bitmap at it's new location
-            canvas.drawBitmap(mScaledBitmap, mXPos, mYPos, mPainter);
+            /*canvas.drawBitmap(mScaledBitmap, , , mPainter);*/
+            Paint paint = new Paint();
+            paint.setColor(Color.BLUE);
+            canvas.drawCircle(mXPos, mYPos, 64*scale, paint);
 
 
             //  restore the canvas

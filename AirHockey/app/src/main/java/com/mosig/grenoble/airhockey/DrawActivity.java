@@ -41,10 +41,10 @@ public class DrawActivity extends Activity {
     private static final String TAG = "Lab-Graphics";
 
     // Main view
-    private RelativeLayout mFrame;
+    static public RelativeLayout mFrame;
 
     // Bubble image
-    private Bitmap mBitmap;
+    static Bitmap mBitmap;
 
     // Display dimensions
     private int mDisplayWidth, mDisplayHeight;
@@ -77,7 +77,6 @@ public class DrawActivity extends Activity {
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b64);
 
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -143,17 +142,48 @@ public class DrawActivity extends Activity {
         Puck.start();
     }
 
-    // Set up GestureDetector
+
+
+    // BEGIN_INCLUDE(onTouchEvent)
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        final int action = event.getAction();
+
+        /*
+         * Switch on the action. The action is extracted from the event by
+         * applying the MotionEvent.ACTION_MASK. Alternatively a call to
+         * event.getActionMasked() would yield in the action as well.
+         */
+        switch (action & MotionEvent.ACTION_MASK) {
+
+            case MotionEvent.ACTION_MOVE: {
+                Log.i("gesture","ACTion_move");
+
+                MalletView Mallet = new MalletView(getApplicationContext(),event.getX(),event.getY(), mBitmap, mFrame);
+                mFrame.addView(Mallet);
+                Mallet.start();
+            }
+        }
+
+        return true;
+    }
+
+
+// Set up GestureDetector
     private void setupGestureDetector() {
 
-        mGestureDetector = new GestureDetector(this,
+        GestureDetector.SimpleOnGestureListener gestureListener = new GestureListener();
 
-                new GestureDetector.SimpleOnGestureListener() {
+        mGestureDetector = new GestureDetector(this, gestureListener
+
+
+                /*new GestureDetector.SimpleOnGestureListener() {
 
                     // If a fling gesture starts on a MalletView then change the
                     // MalletView's velocity
 
-                    @Override
+                    /*@Override
                     public boolean onFling(MotionEvent event1, MotionEvent event2,
                                            float velocityX, float velocityY) {
 
@@ -171,14 +201,14 @@ public class DrawActivity extends Activity {
                         //get the position of the new Bubble which matches the tap position
                         //MalletView newBubble = new MalletView(mFrame.getContext(),x,y);
 
-                        /*for (int i = 0; i < childCount; i++) {
+                        for (int i = 0; i < childCount; i++) {
                             // If the tap location overlaps an existing bubble and we should “pop” it
                             MalletView flingBubble = (MalletView) mFrame.getChildAt(i);
                             if (flingBubble.intersects(x, y)) {
                                 flingBubble.deflect(velocityX, velocityY);
                                 return true;
                             }
-                        }*/
+                        }
 
                         return false;
 
@@ -196,28 +226,29 @@ public class DrawActivity extends Activity {
                         // ViewGroup.getChildCount() method
 
                         //popping bubbles - deleted
-                        /*for(int i=0;i<mFrame.getChildCount(); ++i) {
+                        for(int i=0;i<mFrame.getChildCount(); ++i) {
                             MalletView bubbleNew = (MalletView) mFrame.getChildAt(i);
                             if(bubbleNew.intersects(event.getX(), event.getY())) {
                                 bubbleNew.stop(true);
                                 return true;
                             }
-                        }*/
+                        }
 
 
 
-                        return false;
-                    }
-                });
+                        return false
+                    }*/
+                );
+        Log.i("test", "setup gesture detector");
     }
 
-    @Override
+    /*@Override
     public boolean onTouchEvent(MotionEvent event) {
 
         //  delegate the touch to the gestureDetector
         return mGestureDetector.onTouchEvent(event);
 
-    }
+    }*/
 
     @Override
     protected void onPause() {

@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 21
+    buildToolsVersion '21.0.0'
 
     defaultConfig {
         applicationId "com.mosig.grenoble.airhockey"
@@ -20,5 +20,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-annotations:21.0.2'
+    compile 'com.android.support:support-v4:21.0.2'
 }
