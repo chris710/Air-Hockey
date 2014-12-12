@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
     <eat-comment />
 
     <color name="cardview_dark_background">#FF202020</color>
@@ -34,7 +34,7 @@
         <!-- Inner padding between the bottom edge of the Card and children of the CardView. -->
         <attr name="contentPaddingBottom" format="dimension" />
     </declare-styleable>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/gridlayout-v7/21.0.2/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/gridlayout-v7/21.0.2/res/values/values.xml -->
     <eat-comment />
 
     <declare-styleable name="GridLayout">
@@ -230,17 +230,17 @@
             <flag name="end" value="0x00800005" />
         </attr>
     </declare-styleable>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
     <eat-comment />
 
     <dimen name="cardview_compat_inset_shadow">1dp</dimen>
     <dimen name="cardview_default_elevation">2dp</dimen>
     <dimen name="cardview_default_radius">2dp</dimen>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/gridlayout-v7/21.0.2/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/gridlayout-v7/21.0.2/res/values/values.xml -->
     <eat-comment />
 
     <dimen name="default_gap">16dip</dimen>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values/template-dimens.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values/template-dimens.xml -->
     <eat-comment />
 
     <dimen name="horizontal_page_margin">@dimen/margin_medium</dimen>
@@ -250,7 +250,7 @@
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_tiny">4dp</dimen>
     <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values/base-strings.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values/base-strings.xml -->
     <eat-comment />
 
     <string name="app_name">BasicMultitouch</string>
@@ -266,7 +266,7 @@ across multiple touch events.
         
         ]]>
     </string>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values/styles.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values/styles.xml -->
     <eat-comment />
 
     <style name="AppBaseTheme" parent="android:Theme.Light.NoTitleBar">
@@ -276,11 +276,11 @@ across multiple touch events.
             backward-compatibility can go here.
         -->
     </style>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values/template-styles.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values/template-styles.xml -->
     <eat-comment />
 
     <style name="AppTheme" parent="Theme.Sample" />
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/21.0.2/res/values/values.xml -->
     <eat-comment />
 
     <style name="CardView">
@@ -299,7 +299,7 @@ across multiple touch events.
     <style name="CardView.Light">
         <item name="cardBackgroundColor">@color/cardview_light_background</item>
     </style>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values/template-styles.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values/template-styles.xml -->
     <eat-comment />
 
     <style name="Theme.Base" parent="android:Theme.Light" />
@@ -314,7 +314,8 @@ across multiple touch events.
     </style>
 
     <style name="Widget.SampleMessageTile">
-        <item name="android:background">@drawable/tile</item>
+
+        <!-- <item name="android:background">@drawable/tile</item> -->
         <item name="android:shadowColor">#7F000000</item>
         <item name="android:shadowDy">-3.5</item>
         <item name="android:shadowRadius">2</item>

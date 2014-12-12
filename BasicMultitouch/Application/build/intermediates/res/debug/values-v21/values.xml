@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/BasicMultitouch/Application/src/main/res/values-v21/template-styles.xml -->
+    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values-v21/template-styles.xml -->
     <eat-comment />
 
     <style name="Theme.Base" parent="android:Theme.Material.Light" />

@@ -223,7 +223,8 @@ public class TouchDisplayView extends View {
                  */
                 mTouches.clear();
                 mHasTouch = false;
-
+                malletDown.init = true;
+                malletUp.init = true;
 
                 break;
             }
@@ -450,31 +451,31 @@ public class TouchDisplayView extends View {
                 return;
             }
 
-           /* //are there new positions for the pointers //todo my idea doesnt work :/
+           //are there new positions for the pointers //todo my idea doesnt work :/
             if (data.id == malletUp.id) {
                 if(data.border | data.down) {
                     malletUp.x = data.x;
                 } else {
-                    mTouches.remove(i);
+                    //mTouches.remove(i);
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
                 if(data.border | data.up) {
                     malletDown.x = data.x;
                 } else {
-                    mTouches.remove(i);
+                    //mTouches.remove(i);
                     malletDown = data;
                 }
-            }*/
+            }
         }
 
-        if (mTouches.getLast().border) {
+        /*if (mTouches.getLast().border) {
             return;
         } else if (mTouches.getLast().up) {
             malletUp = mTouches.getLast();
         } else {
             malletDown = mTouches.getLast();
-        }
+        }*/
     }
 
 }
