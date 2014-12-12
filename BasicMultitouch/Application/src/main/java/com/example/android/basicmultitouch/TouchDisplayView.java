@@ -58,6 +58,8 @@ public class TouchDisplayView extends View {
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
+    Integer radius;
+
 
     //bitmaps
     Bitmap mBitmapG = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
@@ -85,9 +87,10 @@ public class TouchDisplayView extends View {
 
         public TouchPoint(float x, float y, int id) {
 
-            this.x = x;
-            this.y = y;
+            this.x = x-radius;
+            this.y = y - radius;
             this.id = id;
+            Log.i("x = ",Float.toString(x-radius));
 
 
         }
@@ -303,6 +306,10 @@ public class TouchDisplayView extends View {
             //initial mallets
             float x = canvas.getWidth()/2;
             float y = canvas.getHeight() / 4;
+            radius = Math.round(mBitmapG.getHeight()*scale/2);
+            mBitmapG = Bitmap.createScaledBitmap(mBitmapG,radius*2,radius*2,false);
+            mBitmapP = Bitmap.createScaledBitmap(mBitmapP,radius*2,radius*2,false);
+
 
             //setting appropriate points
             TouchPoint data = new TouchPoint(x, 3*y, 3);
@@ -355,7 +362,7 @@ public class TouchDisplayView extends View {
     private Paint mBorderPaint = new Paint();
     private float mBorderWidth;
 
-    public final int[] COLORS = {
+    public final int[] COLORS = {   //not used anymore
             0xFF33B5E5, 0xFFAA66CC, 0xFF99CC00, 0xFFFFBB33, 0xFFFF4444,
             0xFF0099CC, 0xFF9933CC, 0xFF669900, 0xFFFF8800, 0xFFCC0000
     };
@@ -394,15 +401,14 @@ public class TouchDisplayView extends View {
     protected void drawCircle(Canvas canvas, TouchPoint data) {
         //set color of circle/ set picture depending on who they are = upper boeard or down half
         int color = COLORS[0];
-        float radius = scale;
 
         if(data == malletUp & !mUpTouch) {
             color = COLORS[1];
             mUpTouch = true;    //only one circle in the upper region of the board
-            canvas.drawBitmap(mBitmapP, data.x - radius, data.y - radius, mCirclePaint);
+            canvas.drawBitmap(mBitmapP, data.x, data.y, mCirclePaint);
         } else if(data == malletDown & !mDownTouch) {
             mDownTouch = true;  //only one circle in the down region of the board
-            canvas.drawBitmap(mBitmapG, data.x - radius, data.y - radius, mCirclePaint);
+            canvas.drawBitmap(mBitmapG, data.x, data.y, mCirclePaint);
 
         } else return;
 
@@ -439,14 +445,14 @@ public class TouchDisplayView extends View {
       * @param canvas
      */
     private void decideUp(Canvas canvas) {
-        float border = canvas.getHeight() /2;
+        float border = canvas.getHeight() /2 - radius;
 
         for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
             TouchPoint data = mTouches.get(i);
             if (!data.down & !data.up & !data.border) { //is one of the attributes already set?
-                if (data.y < border -10) {  //upper area
+                if (data.y < border -radius) {  //upper area
                     data.up = true;
-                } else if (data.y > border +10) {   //down area
+                } else if (data.y > border + radius) {   //down area
                     data.down = true;
                 } else {                    //point is in border area
                     data.border = true;
