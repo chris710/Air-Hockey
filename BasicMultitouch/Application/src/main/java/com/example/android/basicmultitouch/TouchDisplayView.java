@@ -59,6 +59,10 @@ public class TouchDisplayView extends View {
     //scale for deciding how big the objects are going to be displayed
     public float scale;
 
+    //bitmaps
+    Bitmap mBitmapG = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
+    Bitmap mBitmapP = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_pink);
+
 
     /**
      * Holds data related to a touch pointer, including its current position,
@@ -390,11 +394,16 @@ public class TouchDisplayView extends View {
     protected void drawCircle(Canvas canvas, TouchPoint data) {
         //set color of circle/ set picture depending on who they are = upper boeard or down half
         int color = COLORS[0];
+        float radius = scale;
+
         if(data == malletUp & !mUpTouch) {
             color = COLORS[1];
             mUpTouch = true;    //only one circle in the upper region of the board
+            canvas.drawBitmap(mBitmapP, data.x - radius, data.y - radius, mCirclePaint);
         } else if(data == malletDown & !mDownTouch) {
             mDownTouch = true;  //only one circle in the down region of the board
+            canvas.drawBitmap(mBitmapG, data.x - radius, data.y - radius, mCirclePaint);
+
         } else return;
 
         Log.i("mTouches.size", Integer.toString(mTouches.size()));
@@ -407,13 +416,10 @@ public class TouchDisplayView extends View {
          */
         //float pressure = Math.min(data.pressure, 1f);
 
-        float radius = scale;
 
-        canvas.drawCircle(data.x, data.y, radius,
-                mCirclePaint);
+        //canvas.drawCircle(data.x, data.y, radius,  mCirclePaint);
         // Load basic bubble Bitmap
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.b128);
-        canvas.drawBitmap( mBitmap, data.x - radius, data.y - radius, mCirclePaint);
+
 
         // draw all historical points with a lower alpha value
         /*mCirclePaint.setAlpha(125);
