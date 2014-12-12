@@ -234,7 +234,7 @@ import java.util.concurrent.TimeUnit;
 
         // Draw the Bubble at its current location
         @Override
-        protected synchronized void onDraw(Canvas canvas) {
+        protected synchronized void onDraw(scale canvas) {
 
             //  save the canvas
             canvas.save();

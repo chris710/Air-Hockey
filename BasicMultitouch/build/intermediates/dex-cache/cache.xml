@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2" >
 
     <item
-        dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b4bce2a46e5a33a2d2344cbe22993172eec79119.jar"
-        jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\classes.jar"
-        jumboMode="false"
-        revision="21.0.0"
-        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3"/>
-    <item
-        dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-16a8f3808a7ddfd548476199596416c4cf0637b6.jar"
-        jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\gridlayout-v7\21.0.2\classes.jar"
-        jumboMode="false"
-        revision="21.0.0"
-        sha1="9742ced04aafd9ac97dd2c66c1aa0e32d2ae7e54"/>
-    <item
-        dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\internal_impl-21.0.2-5d08d157473dd331e6cc6f7e3d4ceddcb7d2dd0f.jar"
         jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\libs\internal_impl-21.0.2.jar"
         jumboMode="false"
         revision="21.0.0"
-        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f"/>
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\internal_impl-21.0.2-5d08d157473dd331e6cc6f7e3d4ceddcb7d2dd0f.jar" />
+    </item>
     <item
-        dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\support-annotations-21.0.2-6a36db681e4cabe3fcdc6d0641799c35575ae03b.jar"
-        jar="C:\Users\Maria\AppData\Local\Android\android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.2\support-annotations-21.0.2.jar"
-        jumboMode="false"
-        revision="21.0.0"
-        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6"/>
-    <item
-        dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b56e7983835f0aba847ef12c93e4ffa1ee507db9.jar"
         jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\cardview-v7\21.0.2\classes.jar"
         jumboMode="false"
         revision="21.0.0"
-        sha1="b017100da14f9c158c9f5f2f508333c224b24a7c"/>
+        sha1="b017100da14f9c158c9f5f2f508333c224b24a7c">
+        <dex dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b56e7983835f0aba847ef12c93e4ffa1ee507db9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Maria\AppData\Local\Android\android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.2\support-annotations-21.0.2.jar"
+        jumboMode="false"
+        revision="21.0.0"
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\support-annotations-21.0.2-6a36db681e4cabe3fcdc6d0641799c35575ae03b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\classes.jar"
+        jumboMode="false"
+        revision="21.0.0"
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b4bce2a46e5a33a2d2344cbe22993172eec79119.jar" />
+    </item>
+    <item
+        jar="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\exploded-aar\com.android.support\gridlayout-v7\21.0.2\classes.jar"
+        jumboMode="false"
+        revision="21.0.0"
+        sha1="9742ced04aafd9ac97dd2c66c1aa0e32d2ae7e54">
+        <dex dex="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-16a8f3808a7ddfd548476199596416c4cf0637b6.jar" />
+    </item>
 
-</pre-dex-items>
+</items>

@@ -1,0 +1,6 @@
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\classes\debug
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\support-annotations-21.0.2-6a36db681e4cabe3fcdc6d0641799c35575ae03b.jar
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b56e7983835f0aba847ef12c93e4ffa1ee507db9.jar
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-16a8f3808a7ddfd548476199596416c4cf0637b6.jar
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\internal_impl-21.0.2-5d08d157473dd331e6cc6f7e3d4ceddcb7d2dd0f.jar
+C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\intermediates\pre-dexed\debug\classes-b4bce2a46e5a33a2d2344cbe22993172eec79119.jar

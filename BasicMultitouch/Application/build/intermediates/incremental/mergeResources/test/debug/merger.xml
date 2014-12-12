@@ -1,10 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="2" >
-
-    <dataSet config="main" >
-        <source path="C:\Users\Maria\AndroidStudioProjects\BasicMultitouch\Application\tests\res" />
-        <source path="C:\Users\Maria\AndroidStudioProjects\BasicMultitouch\Application\build\generated\res\rs\test\debug" />
-        <source path="C:\Users\Maria\AndroidStudioProjects\BasicMultitouch\Application\build\generated\res\generated\test\debug" />
-    </dataSet>
-
-</merger>
+<merger version="3"><dataSet config="main"><source path="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\tests\res"/><source path="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\generated\res\rs\test\debug"/><source path="C:\Users\Maria\AndroidStudioProjects\Air-Hockey\BasicMultitouch\Application\build\generated\res\generated\test\debug"/></dataSet><mergedItems/></merger>

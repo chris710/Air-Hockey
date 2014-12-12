@@ -56,6 +56,9 @@ public class TouchDisplayView extends View {
     public TouchPoint malletUp;
     public TouchPoint malletDown;
 
+    //scale for deciding how big the objects are going to be displayed
+    public float scale;
+
 
     /**
      * Holds data related to a touch pointer, including its current position,
@@ -285,6 +288,9 @@ public class TouchDisplayView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        //setting scale
+        scale = canvas.getWidth()/320;
+
         // Canvas background color
         canvas.drawColor(BACKGROUND_ACTIVE);
 
@@ -292,16 +298,16 @@ public class TouchDisplayView extends View {
             // coordinates for drawing if there was no touch yet
             //initial mallets
             float x = canvas.getWidth()/2;
-            float y = canvas.getHeight() - 20; //TODO - scale?;
+            float y = canvas.getHeight() / 4;
 
             //setting appropriate points
-            TouchPoint data = new TouchPoint(x, y, 3);
+            TouchPoint data = new TouchPoint(x, 3*y, 3);
             data.down = true;
             malletDown = data;
             malletDown.init = true;
 
             //second point
-            TouchPoint data2 = new TouchPoint(x, 20, 4);   //Todo + 2*scale
+            TouchPoint data2 = new TouchPoint(x, 1*y, 4);
             data2.up = true;
             malletUp = data2;
             malletUp.init = true;
@@ -370,6 +376,7 @@ public class TouchDisplayView extends View {
         mBorderPaint.setColor(INACTIVE_BORDER_COLOR);
         mBorderPaint.setStyle(Paint.Style.STROKE);
 
+
     }
 
     /**
@@ -399,7 +406,8 @@ public class TouchDisplayView extends View {
          * exceed 1.0, depending on the calibration of the touch screen).
          */
         //float pressure = Math.min(data.pressure, 1f);
-        float radius = (float)0.5 * mCircleRadius;
+
+        float radius = scale;
 
         canvas.drawCircle(data.x, data.y, radius,
                 mCirclePaint);
@@ -442,16 +450,29 @@ public class TouchDisplayView extends View {
                 mTouches.add(i, data);
             }
 
-            //overcoming intial mallets
+            //reset mallets when no one touched the display
             if (data.up && malletUp.init) {
                 malletUp = data;
+
+                if(malletUp.id == 0) {
+                    malletDown.id = 1;
+                } else {
+                    malletDown.id = 0;
+                }
+
                 return;
             } else if(data.down && malletDown.init) {
                 malletDown = data;
+                //resetting the id of the mallets
+                if (malletDown.id == 1) {
+                    malletUp.id = 0;
+                } else {
+                    malletUp.id = 1;
+                }
                 return;
             }
 
-           //are there new positions for the pointers //todo my idea doesnt work :/
+           //are there new positions for the pointers
             if (data.id == malletUp.id) {
                 if(data.border | data.down) {
                     malletUp.x = data.x;
