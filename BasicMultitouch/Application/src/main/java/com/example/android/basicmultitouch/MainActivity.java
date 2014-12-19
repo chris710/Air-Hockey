@@ -18,6 +18,9 @@ package com.example.android.basicmultitouch;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.Display;
+import android.widget.RelativeLayout;
 
 /**
  * This is an example of keeping track of individual touches across multiple
@@ -32,12 +35,24 @@ import android.os.Bundle;
  */
 public class MainActivity extends Activity {
     TouchDisplayView mView;
+    RelativeLayout mFrame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_mainactivity);
+        mFrame = (RelativeLayout) findViewById(R.id.frame);
+                //getWindowManager().getDefaultDisplay();
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus) {
+            mView = new TouchDisplayView(getApplicationContext(), null, mFrame);
+        }
     }
 
 

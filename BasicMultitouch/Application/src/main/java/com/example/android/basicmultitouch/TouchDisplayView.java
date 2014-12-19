@@ -22,13 +22,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewDebug;
+import android.view.Display;
+import android.widget.RelativeLayout;
 
 import com.example.android.basicmultitouch.Pools.SimplePool;
 
@@ -55,6 +55,9 @@ public class TouchDisplayView extends View {
     // the points of where the mallets are right now
     public TouchPoint malletUp;
     public TouchPoint malletDown;
+
+    //for height/size of the actual display
+    RelativeLayout display;
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
@@ -87,7 +90,7 @@ public class TouchDisplayView extends View {
 
         public TouchPoint(float x, float y, int id) {
 
-            this.x = x-radius;
+            this.x = x - radius;
             this.y = y - radius;
             this.id = id;
             Log.i("x = ",Float.toString(x-radius));
@@ -147,11 +150,12 @@ public class TouchDisplayView extends View {
 
     }
 
-    public TouchDisplayView(Context context, AttributeSet attrs) {
+    public TouchDisplayView(Context context, AttributeSet attrs, RelativeLayout frame) {
         super(context, attrs);
 
         // SparseArray for touch events, indexed by touch id
         mTouches = new LinkedList<TouchPoint>();
+        mFrame = mDisplay;
 
         initialisePaint();
     }
@@ -274,7 +278,11 @@ public class TouchDisplayView extends View {
                     int id = event.getPointerId(index);
 
                     TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
-                    mTouches.remove(id);
+                    try {
+                        mTouches.remove(id);
+                    } catch (IndexOutOfBoundsException e) {
+                        // do nothing
+                    }
                     mTouches.add(id, data);
 
                 }
@@ -326,7 +334,7 @@ public class TouchDisplayView extends View {
         } else if (mHasTouch)  {
             //if somone is touching the display, the points could differ
             // setting boolean attributes of the Touchpoints in mTouches and setting malletUp and malletDown
-            decideUp(canvas);
+            decideAttributes(canvas);
         }
 
         // draw the data to the canvas
@@ -444,12 +452,45 @@ public class TouchDisplayView extends View {
       * helper function for onDraw, the first time Canvas is used
       * @param canvas
      */
-    private void decideUp(Canvas canvas) {
+    private void decideAttributes(Canvas canvas) {
         float border = canvas.getHeight() /2 - radius;
+
+        //display height and with
+        Point size = new Point();
+        int width, height;
+        /*try {
+            display.getRealSize(size);
+            height = size.y;
+            width = size.x;
+        } catch (NoSuchMethodError e) {
+            height = display.getHeight();
+            width = display.getWidth();
+        }*/
+        width = mFrame.getWidth() - radius;
+        height = mFrame.getHeight() - radius;
 
         for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
             TouchPoint data = mTouches.get(i);
-            if (!data.down & !data.up & !data.border) { //is one of the attributes already set?
+            //is the mallet inside the view?
+            if (data.x < 0 | data.y < 0 ) {
+                if(data.x < 0) {
+                    data.x = 0;
+                }
+                if(data.y < 0) {
+                    data.y = 0;
+                };
+            }
+            if (data.x > width | data.y > height) {
+                if(data.x > width) {
+                    data.x = width;
+                }
+                if(data.y > height) {
+                    data.y = height;
+                }
+            }
+
+            //is one of the attributes concerning which area they are in already set?
+            if (!data.down & !data.up & !data.border) {
                 if (data.y < border -radius) {  //upper area
                     data.up = true;
                 } else if (data.y > border + radius) {   //down area
@@ -464,22 +505,20 @@ public class TouchDisplayView extends View {
 
             //reset mallets when no one touched the display
             if (data.up && malletUp.init) {
-                malletUp = data;
-
-                if(malletUp.id == 0) {
+                if(malletDown.init) {
+                    malletUp = data;
                     malletDown.id = 1;
-                } else {
-                    malletDown.id = 0;
+                } else if(malletDown.id != data.id) {
+                    malletUp = data;
                 }
 
                 return;
             } else if(data.down && malletDown.init) {
-                malletDown = data;
-                //resetting the id of the mallets
-                if (malletDown.id == 1) {
-                    malletUp.id = 0;
-                } else {
+                if (malletUp.init) {
+                    malletDown = data;
                     malletUp.id = 1;
+                } else if(malletUp.id != data.id) {
+                    malletDown = data;
                 }
                 return;
             }
