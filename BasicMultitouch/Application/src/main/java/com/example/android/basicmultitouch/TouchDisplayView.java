@@ -17,17 +17,22 @@
 package com.example.android.basicmultitouch;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Display;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.example.android.basicmultitouch.Pools.SimplePool;
@@ -57,7 +62,7 @@ public class TouchDisplayView extends View {
     public TouchPoint malletDown;
 
     //for height/size of the actual display
-    RelativeLayout display;
+    DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
@@ -150,12 +155,12 @@ public class TouchDisplayView extends View {
 
     }
 
-    public TouchDisplayView(Context context, AttributeSet attrs, RelativeLayout frame) {
+    public TouchDisplayView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // SparseArray for touch events, indexed by touch id
         mTouches = new LinkedList<TouchPoint>();
-        mFrame = mDisplay;
+        DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
 
         initialisePaint();
     }
@@ -304,7 +309,7 @@ public class TouchDisplayView extends View {
         super.onDraw(canvas);
 
         //setting scale
-        scale = canvas.getWidth()/320;
+        scale = display.widthPixels / 320;
 
         // Canvas background color
         canvas.drawColor(BACKGROUND_ACTIVE);
@@ -312,8 +317,8 @@ public class TouchDisplayView extends View {
         if(!mFirstTouch){
             // coordinates for drawing if there was no touch yet
             //initial mallets
-            float x = canvas.getWidth()/2;
-            float y = canvas.getHeight() / 4;
+            float x = display.widthPixels / 2;
+            float y = display.heightPixels / 4;
             radius = Math.round(mBitmapG.getHeight()*scale/2);
             mBitmapG = Bitmap.createScaledBitmap(mBitmapG,radius*2,radius*2,false);
             mBitmapP = Bitmap.createScaledBitmap(mBitmapP,radius*2,radius*2,false);
@@ -353,11 +358,6 @@ public class TouchDisplayView extends View {
 
     // radius of active touch circle in dp
     private static final float CIRCLE_RADIUS_DP = 75f;
-    // radius of historical circle in dp
-    private static final float CIRCLE_HISTORICAL_RADIUS_DP = 7f;
-
-    // calculated radiuses in px
-    private float mCircleRadius;
 
     private Paint mCirclePaint = new Paint();
     private Paint mTextPaint = new Paint();
@@ -383,7 +383,6 @@ public class TouchDisplayView extends View {
 
         // Calculate radiuses in px from dp based on screen density
         float density = getResources().getDisplayMetrics().density;
-        mCircleRadius = CIRCLE_RADIUS_DP * density;
 
         // Setup text paint for circle label
         mTextPaint.setTextSize(27f);
@@ -453,21 +452,15 @@ public class TouchDisplayView extends View {
       * @param canvas
      */
     private void decideAttributes(Canvas canvas) {
-        float border = canvas.getHeight() /2 - radius;
+        float border = display.heightPixels /2 - radius;
 
         //display height and with
-        Point size = new Point();
         int width, height;
-        /*try {
-            display.getRealSize(size);
-            height = size.y;
-            width = size.x;
-        } catch (NoSuchMethodError e) {
-            height = display.getHeight();
-            width = display.getWidth();
-        }*/
-        width = mFrame.getWidth() - radius;
-        height = mFrame.getHeight() - radius;
+
+        width = display.widthPixels - 2*radius;
+        height = display.heightPixels - 2*radius;
+
+
 
         for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
             TouchPoint data = mTouches.get(i);

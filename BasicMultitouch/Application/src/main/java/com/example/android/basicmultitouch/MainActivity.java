@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -35,25 +36,25 @@ import android.widget.RelativeLayout;
  */
 public class MainActivity extends Activity {
     TouchDisplayView mView;
-    RelativeLayout mFrame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_mainactivity);
-        mFrame = (RelativeLayout) findViewById(R.id.frame);
+        //mFrame = getWindowManager().getDefaultDisplay();
                 //getWindowManager().getDefaultDisplay();
 
     }
 
-    @Override
+    /*@Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus) {
+            //mFrame = (LinearLayout) findViewById(R.id.frame);
             mView = new TouchDisplayView(getApplicationContext(), null, mFrame);
         }
-    }
+    }*/
 
 
 

@@ -288,6 +288,7 @@ containing a value of this type.
         public static final int fill=0x7f08000b;
         public static final int fill_horizontal=0x7f08000c;
         public static final int fill_vertical=0x7f08000d;
+        public static final int frame=0x7f080012;
         public static final int horizontal=0x7f080000;
         public static final int left=0x7f08000e;
         public static final int right=0x7f08000f;
