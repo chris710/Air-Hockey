@@ -41,3 +41,11 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Android studio trash
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
