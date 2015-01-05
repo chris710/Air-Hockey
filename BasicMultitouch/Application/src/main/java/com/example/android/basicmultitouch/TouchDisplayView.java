@@ -50,8 +50,8 @@ public class TouchDisplayView extends View {
     private LinkedList<TouchPoint> mTouches;
 
     // Is there an active touch?
-    private boolean mHasTouch = false;
-    private boolean mFirstTouch = false;
+    private boolean mHasTouch = false;      //TODO if it is what I think it is then it should not be here
+    private boolean mFirstTouch = false;    //initial state, before any interaction
 
     // Only one touch per side of board
     private boolean mUpTouch = false;
@@ -60,6 +60,9 @@ public class TouchDisplayView extends View {
     // the points of where the mallets are right now
     public TouchPoint malletUp;
     public TouchPoint malletDown;
+
+    // puck global init
+    public Puck puck;
 
     //for height/size of the actual display
     DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
@@ -98,7 +101,7 @@ public class TouchDisplayView extends View {
             this.x = x - radius;
             this.y = y - radius;
             this.id = id;
-            Log.i("x = ",Float.toString(x-radius));
+            Log.i("New TouchPoint created at x = ",Float.toString(x-radius));
 
 
         }
@@ -155,6 +158,25 @@ public class TouchDisplayView extends View {
 
     }
 
+
+    /*
+    *   Suprisingly, a Puck class
+    */
+
+    final class Puck {
+        //puck position
+        public float x;
+        public float y;
+        public float radius;
+
+        //petty constructor
+        Puck(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    //TODO what is this function for?
     public TouchDisplayView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -305,6 +327,7 @@ public class TouchDisplayView extends View {
     // END_INCLUDE(onTouchEvent)
 
     @Override
+    //I guess here is where we initialize things
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -336,6 +359,11 @@ public class TouchDisplayView extends View {
             malletUp = data2;
             malletUp.init = true;
 
+            // initialize Puck
+            Puck data3 = new Puck(x,2*y);
+            data3.radius = scale*40;
+            puck = data3;
+
         } else if (mHasTouch)  {
             //if somone is touching the display, the points could differ
             // setting boolean attributes of the Touchpoints in mTouches and setting malletUp and malletDown
@@ -343,8 +371,14 @@ public class TouchDisplayView extends View {
         }
 
         // draw the data to the canvas
+        //mallets
         drawCircle(canvas, malletDown);
         drawCircle(canvas, malletUp);
+        //puck
+        if(puck != null) {
+            mCirclePaint.setColor(COLORS[3]);
+            canvas.drawCircle(puck.x, puck.y, puck.radius, mCirclePaint); //drawing puck
+        }
 
         //reset booleans, otherwise they would never be drawn again
         mDownTouch = false;
@@ -454,7 +488,7 @@ public class TouchDisplayView extends View {
     private void decideAttributes(Canvas canvas) {
         float border = display.heightPixels /2 - radius;
 
-        //display height and with
+        //display height and width
         int width, height;
 
         width = display.widthPixels - 2*radius;
