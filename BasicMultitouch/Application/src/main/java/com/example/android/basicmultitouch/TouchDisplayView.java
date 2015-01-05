@@ -17,25 +17,16 @@
 package com.example.android.basicmultitouch;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Display;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.example.android.basicmultitouch.Pools.SimplePool;
 
 import java.util.LinkedList;
 
@@ -69,7 +60,7 @@ public class TouchDisplayView extends View {
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
-    Integer radius;
+    Integer malletRadius;   //radius of a mallet
 
 
     //bitmaps
@@ -87,6 +78,7 @@ public class TouchDisplayView extends View {
 
         public float x;
         public float y;
+        public float radius;
 
         public int id;
 
@@ -96,12 +88,12 @@ public class TouchDisplayView extends View {
         public boolean border = false;
         public boolean init = false;
 
-        public TouchPoint(float x, float y, int id) {
-
-            this.x = x - radius;
-            this.y = y - radius;
+        public TouchPoint(float x, float y, int id, float radius) {
+            this.radius = radius;
+            this.x = x - this.radius;
+            this.y = y - this.radius;
             this.id = id;
-            Log.i("New TouchPoint created at x = ",Float.toString(x-radius));
+            Log.i("New TouchPoint created at x = ",Float.toString(x-this.radius));
 
 
         }
@@ -167,7 +159,11 @@ public class TouchDisplayView extends View {
         //puck position
         public float x;
         public float y;
+        //puck size
         public float radius;
+        //puck dynamics
+        public float verticalMov;
+        public float horizontalMov;
 
         //petty constructor
         Puck(float x, float y) {
@@ -207,8 +203,9 @@ public class TouchDisplayView extends View {
                  * the pointer identifier of this touch from the first index
                  * within the MotionEvent object.
                  */
+                //TODO deleting touchpoints is a very bad idea, as they need to stay physical throughout the game
                 int id = event.getPointerId(0);
-                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id);
+                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
                 /*
                  * Store the data under its pointer identifier. The pointer
                  * number stays consistent for the duration of a gesture,
@@ -237,7 +234,7 @@ public class TouchDisplayView extends View {
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
-                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
+                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
 
                 /*
                  * Store the data under its pointer identifier. The index of
@@ -304,7 +301,7 @@ public class TouchDisplayView extends View {
                     // get pointer id for data stored at this index
                     int id = event.getPointerId(index);
 
-                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
+                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
                     try {
                         mTouches.remove(id);
                     } catch (IndexOutOfBoundsException e) {
@@ -342,19 +339,19 @@ public class TouchDisplayView extends View {
             //initial mallets
             float x = display.widthPixels / 2;
             float y = display.heightPixels / 4;
-            radius = Math.round(mBitmapG.getHeight()*scale/2);
-            mBitmapG = Bitmap.createScaledBitmap(mBitmapG,radius*2,radius*2,false);
-            mBitmapP = Bitmap.createScaledBitmap(mBitmapP,radius*2,radius*2,false);
+            malletRadius = Math.round(mBitmapG.getHeight()*scale/2);
+            mBitmapG = Bitmap.createScaledBitmap(mBitmapG, malletRadius *2, malletRadius *2,false);
+            mBitmapP = Bitmap.createScaledBitmap(mBitmapP, malletRadius *2, malletRadius *2,false);
 
 
             //setting appropriate points
-            TouchPoint data = new TouchPoint(x, 3*y, 3);
+            TouchPoint data = new TouchPoint(x, 3*y, 3,malletRadius);
             data.down = true;
             malletDown = data;
             malletDown.init = true;
 
             //second point
-            TouchPoint data2 = new TouchPoint(x, 1*y, 4);
+            TouchPoint data2 = new TouchPoint(x, 1*y, 4, malletRadius);
             data2.up = true;
             malletUp = data2;
             malletUp.init = true;
@@ -446,9 +443,12 @@ public class TouchDisplayView extends View {
         if(data == malletUp & !mUpTouch) {
             color = COLORS[1];
             mUpTouch = true;    //only one circle in the upper region of the board
+            //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mCirclePaint);
             canvas.drawBitmap(mBitmapP, data.x, data.y, mCirclePaint);
+
         } else if(data == malletDown & !mDownTouch) {
             mDownTouch = true;  //only one circle in the down region of the board
+            //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mCirclePaint);
             canvas.drawBitmap(mBitmapG, data.x, data.y, mCirclePaint);
 
         } else return;
@@ -481,21 +481,23 @@ public class TouchDisplayView extends View {
     }
 
     /*
+      * TODO change that name as I guess there will be all the physics there
+      * TODO also divide content into smaller functions
       * function for setting the attributes up and down of the TouchPoints inside mTouches
       * helper function for onDraw, the first time Canvas is used
       * @param canvas
      */
     private void decideAttributes(Canvas canvas) {
-        float border = display.heightPixels /2 - radius;
+        float border = display.heightPixels /2 - malletRadius;
 
         //display height and width
         int width, height;
 
-        width = display.widthPixels - 2*radius;
-        height = display.heightPixels - 2*radius;
+        width = display.widthPixels - 2* malletRadius;
+        height = display.heightPixels - 2* malletRadius;
 
 
-
+        //TODO what does this for loop does? write in comment
         for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
             TouchPoint data = mTouches.get(i);
             //is the mallet inside the view?
@@ -518,9 +520,9 @@ public class TouchDisplayView extends View {
 
             //is one of the attributes concerning which area they are in already set?
             if (!data.down & !data.up & !data.border) {
-                if (data.y < border -radius) {  //upper area
+                if (data.y < border - malletRadius) {  //upper area
                     data.up = true;
-                } else if (data.y > border + radius) {   //down area
+                } else if (data.y > border + malletRadius) {   //down area
                     data.down = true;
                 } else {                    //point is in border area
                     data.border = true;
@@ -568,6 +570,8 @@ public class TouchDisplayView extends View {
             }
         }
 
+        puckPhys();
+
         /*if (mTouches.getLast().border) {
             return;
         } else if (mTouches.getLast().up) {
@@ -577,4 +581,40 @@ public class TouchDisplayView extends View {
         }*/
     }
 
+    /*
+     *  changing movement of puck
+     */
+    private void puckPhys() {
+        //loop for checking a collision of mallet with puck
+        for (int i = 0; i < mTouches.size(); i++) {
+            TouchPoint data = mTouches.get(i);
+            float  power = checkCollision(data.x, data.y, data.radius);
+            Log.i("Power: ", Float.toString(power));
+            if (power != -1) {  //there is a collision
+                puck.horizontalMov = power/1000*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
+                puck.verticalMov = power/1000*(puck.y - data.y);
+                puck.x += puck.horizontalMov;
+                puck.y += puck.verticalMov;
+            }
+            else {  //slow down cowboy
+                if(puck.horizontalMov>0) puck.horizontalMov--;
+                if(puck.horizontalMov<0) puck.horizontalMov++;
+                if(puck.verticalMov>0) puck.verticalMov--;
+                if(puck.verticalMov<0) puck.verticalMov++;
+            }
+        }
+        //TODO boundaries
+    }
+
+    /*
+     * small function for determining whether there is a collision between a mallet an a puck
+     * returns -1 if there is no collision and power value if there is
+     */
+    private float checkCollision(float mx, float my, float mr){
+        if(Math.sqrt(Math.pow((mx-puck.x),2)+Math.pow((my-puck.y),2))<=mr+puck.radius)
+            return (float)Math.sqrt(Math.pow((mx-puck.x),2)+Math.pow((my-puck.y),2));
+        return -1;
+    }
+
 }
+
