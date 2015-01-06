@@ -303,14 +303,15 @@ public class TouchDisplayView extends View {
 
         if(!mFirstTouch && mInitialDraw){
             //setting scale
-            scale = display.widthPixels / 320;
+            //scale = display.widthPixels / 320;
+            scale = display.scaledDensity;
 
 
             // coordinates for drawing if there was no touch yet
             //initial mallets
             float x = display.widthPixels / 2;
             float y = display.heightPixels / 4;
-            malletRadius = Math.round(mBitmapG.getHeight()*scale/2);
+            malletRadius = Math.round(mBitmapG.getHeight()*scale/3);
             mBitmapG = Bitmap.createScaledBitmap(mBitmapG, malletRadius *2, malletRadius *2,false);
             mBitmapP = Bitmap.createScaledBitmap(mBitmapP, malletRadius *2, malletRadius *2,false);
 
@@ -329,7 +330,7 @@ public class TouchDisplayView extends View {
 
             // initialize Puck
             Puck data3 = new Puck(x,2*y);
-            data3.radius = scale*40;
+            data3.radius = scale*30;
             puck = data3;
 
             //setting width and height of the display for later purposes
@@ -527,6 +528,8 @@ public class TouchDisplayView extends View {
 
         puckPhys(malletDown);
         puckPhys(malletUp);
+
+        //checkPinch();
     }
 
     /*
