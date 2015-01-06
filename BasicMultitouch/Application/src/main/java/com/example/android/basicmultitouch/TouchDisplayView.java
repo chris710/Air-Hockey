@@ -22,12 +22,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
 import java.util.LinkedList;
 
@@ -44,6 +44,7 @@ public class TouchDisplayView extends View {
     // Is there an active touch?
     private boolean mHasTouch = false;      //TODO if it is what I think it is then it should not be here
     private boolean mFirstTouch = false;    //initial state, before any interaction
+    private boolean mInitialDraw = true;   //since onDraw sometimes gets used two times, this is for security measures
 
     // Only one touch per side of board
     private boolean mUpTouch = false;
@@ -173,6 +174,11 @@ public class TouchDisplayView extends View {
                 mTouches.add(id, data);
 
                 mHasTouch = true;
+                //activating the redrawing function, for continued drawing on canvas
+                if(mFirstTouch == false) {
+                    mHandler.removeCallbacks(mTick);
+                    mHandler.post(mTick);
+                }
                 mFirstTouch = true;
 
                 break;
@@ -273,8 +279,8 @@ public class TouchDisplayView extends View {
             }
         }
 
-        // trigger redraw on UI thread
-        this.postInvalidate();
+        /*// trigger redraw on UI thread
+        this.postInvalidate();*/
 
         return true;
     }
@@ -289,7 +295,7 @@ public class TouchDisplayView extends View {
         // Canvas background color
         canvas.drawColor(BACKGROUND_ACTIVE);
 
-        if(!mFirstTouch){
+        if(!mFirstTouch && mInitialDraw){
             //setting scale
             scale = display.widthPixels / 320;
 
@@ -324,11 +330,13 @@ public class TouchDisplayView extends View {
             width = display.widthPixels - malletRadius;
             height = display.heightPixels - malletRadius;
 
-        } else if (mHasTouch)  {
-            //if somone is touching the display, the points could differ
-            // setting boolean attributes of the Touchpoints in mTouches and setting malletUp and malletDown
-            decideAttributes(canvas);
+            mInitialDraw = false;
+
         }
+        //if somone is touching the display, the points could differ
+        // setting boolean attributes of the Touchpoints in mTouches and setting malletUp and malletDown
+        decideAttributes(canvas);
+
 
         /********
          *  draw the data to the canvas
@@ -567,6 +575,21 @@ public class TouchDisplayView extends View {
                 data.y = height;
             }
         }
+    }
+
+    /*
+    function and attributes for constant redraw of the canvas
+     */
+    Handler mHandler = new Handler();
+    Runnable mTick = new Runnable() {
+        public void run() {
+            reDraw();
+            mHandler.postDelayed(this, 20); // 20ms == 60fps
+        }
+    };
+
+    private void reDraw() {
+        this.postInvalidate();
     }
 
 }
