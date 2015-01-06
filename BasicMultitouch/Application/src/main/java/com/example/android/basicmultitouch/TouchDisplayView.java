@@ -54,7 +54,7 @@ public class TouchDisplayView extends View {
     public TouchPoint malletUp;
     public TouchPoint malletDown;
 
-    // puck global init
+    // puck global
     public Puck puck;
 
     //for height/size of the actual display
@@ -63,6 +63,7 @@ public class TouchDisplayView extends View {
     //scale for deciding how big the objects are going to be displayed
     public float scale;
     Integer malletRadius;   //radius of a mallet
+    Integer powerReduction = 90;    //slowing puck down coefficient
 
 
     //bitmaps
@@ -136,6 +137,14 @@ public class TouchDisplayView extends View {
             this.verticalMov = 0;
             this.horizontalMov = 0;
         }
+
+        void reset() {
+            this.x = display.widthPixels / 2;
+            this.y = display.heightPixels / 2;
+            this.verticalMov = 0;
+            this.horizontalMov = 0;
+        }
+
     }
 
 
@@ -540,8 +549,8 @@ public class TouchDisplayView extends View {
         double friction = 0.98;      //TODO find proper friction
         /*Log.i("Power: ", Float.toString(power));*/
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/90*(puck.x - data.x );   //determining puck speed changes
-            puck.verticalMov = power/90*(puck.y - data.y);
+            puck.horizontalMov = power/powerReduction*(puck.x - data.x );   //determining puck speed changes
+            puck.verticalMov = power/powerReduction*(puck.y - data.y);
 
         }
         else {  //slow down cowboy
@@ -557,7 +566,7 @@ public class TouchDisplayView extends View {
         puck.x += puck.horizontalMov;
         puck.y += puck.verticalMov;
 
-        //boundaries TODO goals
+        //boundaries & goals
         if (puck.x-puck.radius < 0 ) {  //left edge
             puck.horizontalMov *= -1;
             puck.x = puck.radius;
@@ -567,27 +576,60 @@ public class TouchDisplayView extends View {
             puck.x = display.widthPixels - puck.radius;
         }
         if (puck.y-puck.radius < 0 ) {  //upper edge
-            //if(puck.x - puck.radius > malletUp.gs && puck.x + puck.radius >malletUp.ge) // fits clearly//TODO goal TODO reinit puck TODO add score
-            if( ((puck.x + puck.radius)<malletUp.gs && puck.x>malletUp.gs) || (puck.x - puck.radius>malletUp.ge && puck.x<malletUp.ge) ) {   //angled bounce
-                float nx = puck.x - data.x;
-                float ny = puck.y - data.y;
-                double length = Math.sqrt(nx * nx + ny * ny);
-                nx /= length;
-                ny /= length;
+            //if(puck.x - puck.radius > malletUp.gs && puck.x + puck.radius >malletUp.ge) // fits clearly
+            if( ((puck.x - puck.radius)<malletUp.gs && puck.x>malletUp.gs) ) {//|| (puck.x + puck.radius>malletUp.ge && puck.x<malletUp.ge) ) {   //angled bounce from left corner
+                float nx = puck.x - malletUp.gs;
+                float ny = puck.y - 0;
+                float length = (float)Math.sqrt(nx * nx + ny * ny);
+                //nx /= length;
+                //ny /= length;
+                //float projection = 2*(puck.horizontalMov * nx + puck.verticalMov * ny);
 
-                float projection = puck.horizontalMov* nx + puck.verticalMov* ny;
-                puck.horizontalMov -= 2 * projection * nx;
-                puck.verticalMov -= 2 * projection * ny;
-
-                //puck.verticalMov *= -;
-            } else if( !( puck.x - puck.radius > malletUp.gs && puck.x + puck.radius >malletUp.ge) ) {        //not in a goal
+                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
+                puck.horizontalMov -= projection * nx/powerReduction;
+                puck.verticalMov -= projection * ny/powerReduction;
+            } else if ((puck.x + puck.radius>malletUp.ge && puck.x<malletUp.ge) ) { //angled bounce from right corner
+                float nx = puck.x - malletUp.ge;
+                float ny = puck.y - 0;
+                float length = (float)Math.sqrt(nx * nx + ny * ny);
+                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
+                puck.horizontalMov -= projection * nx/powerReduction;
+                puck.verticalMov -= projection * ny/powerReduction;
+            } else if( !( puck.x - puck.radius > malletUp.gs && puck.x + puck.radius < malletUp.ge) ) {        //not in a goal
                 puck.verticalMov *= -1;
                 puck.y = puck.radius;
-            }   //
+            }   //in other case go smoothly through the goal
+
+            if(puck.y<0) { //in case of score reset the puck and add score
+                puck.reset();
+                malletDown.score++;      //masterpiece of OO programming
+            }
         }
-        if (puck.y+puck.radius > display.heightPixels) {
-            puck.verticalMov *= -1;
-            puck.y = display.heightPixels - puck.radius;
+        if (puck.y+puck.radius > display.heightPixels) {    //lower edge
+            if( ((puck.x - puck.radius)<malletDown.gs && puck.x>malletDown.gs) )  {   //angled bounce from left corner
+                float nx = puck.x - malletDown.gs;
+                float ny = puck.y - display.heightPixels;
+                float length = (float)Math.sqrt(nx * nx + ny * ny);
+                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
+                puck.horizontalMov -= projection * nx/powerReduction;
+                puck.verticalMov -= projection * ny/powerReduction;
+            } else if ((puck.x + puck.radius>malletDown.ge && puck.x<malletDown.ge) ) { //angled bounce from right corner
+                float nx = puck.x - malletDown.ge;
+                float ny = puck.y - display.heightPixels;
+                float length = (float)Math.sqrt(nx * nx + ny * ny);
+                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
+                puck.horizontalMov -= projection * nx/powerReduction;
+                puck.verticalMov -= projection * ny/powerReduction;
+            } else if( !( puck.x - puck.radius > malletDown.gs && puck.x + puck.radius < malletDown.ge) ) {        //not in a goal
+                puck.verticalMov *= -1;
+                puck.y = display.heightPixels - puck.radius;
+            }   //in other case go smoothly through the goal
+
+            if(puck.y>display.heightPixels) { //in case of score reset the puck and add score
+                puck.reset();
+                malletUp.score++;      //masterpiece of OO programming
+            }
+
         }
 
     }
