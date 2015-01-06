@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Users/Maria/AndroidStudioProjects/Air-Hockey/BasicMultitouch/Application/src/main/res/values-v14/styles.xml -->
+    <!-- From: file:/C:/Users/asdf/Documents/GitHub/Air-Hockey/BasicMultitouch/Application/src/main/res/values-v14/styles.xml -->
     <eat-comment/>
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!-- API 14 theme customizations can go here. -->

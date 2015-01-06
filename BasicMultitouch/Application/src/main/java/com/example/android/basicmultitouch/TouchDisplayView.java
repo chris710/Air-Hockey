@@ -496,41 +496,22 @@ public class TouchDisplayView extends View {
            //are there new positions for the pointers
             if (data.id == malletUp.id) {
                 if(data.border | data.down) {
-<<<<<<< HEAD
-                    data.radius = malletDown.radius;
-                    data.gs = malletDown.gs;
-                    data.ge = malletDown.ge;
-                    data.score = malletUp.score;
-                    malletUp.x = data.x;
-                } else {
-                    data.radius = malletDown.radius;
-                    data.gs = malletDown.gs;
-                    data.ge = malletDown.ge;
-                    data.score = malletUp.score;
-=======
                     malletUp.x = data.x;
                 } else {
                     data.radius = malletUp.radius;
                     data.gs = malletUp.gs;
                     data.ge = malletUp.ge;
->>>>>>> origin/master
+                    data.score = malletUp.score;
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
-                if(data.border | data.up) {
-<<<<<<< HEAD
-                    data.radius = malletDown.radius;
-                    data.gs = malletDown.gs;
-                    data.ge = malletDown.ge;
-                    data.score = malletUp.score;
-=======
->>>>>>> origin/master
+                if(data.border || data.up) {
                     malletDown.x = data.x;
                 } else {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
-                    data.score = malletUp.score;
+                    data.score = malletDown.score;
                     malletDown = data;
                 }
             }
