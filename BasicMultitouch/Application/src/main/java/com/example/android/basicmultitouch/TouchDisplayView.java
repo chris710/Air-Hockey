@@ -80,6 +80,11 @@ public class TouchDisplayView extends View {
         public float x;
         public float y;
         public float radius;
+        public Integer score;       //the score of the player
+
+        //goal fields
+        public float gs;    //goal start
+        public float ge;    //goal end
 
         public int id;
 
@@ -91,8 +96,6 @@ public class TouchDisplayView extends View {
 
         public TouchPoint(float x, float y, int id, float radius) {
             this.radius = radius;
-            //this.x = x - this.radius;
-            //this.y = y - this.radius;
             this.x = x;
             this.y = y;
             this.id = id;
@@ -125,6 +128,7 @@ public class TouchDisplayView extends View {
             this.horizontalMov = 0;
         }
     }
+
 
     //TODO what is this function for?
     public TouchDisplayView(Context context, AttributeSet attrs) {
@@ -326,15 +330,22 @@ public class TouchDisplayView extends View {
             decideAttributes(canvas);
         }
 
-        // draw the data to the canvas
-        //mallets
+        /********
+         *  draw the data to the canvas
+         ********/
+        //draw mallets
         drawCircle(canvas, malletDown);
         drawCircle(canvas, malletUp);
-        //puck
+        
+        //draw puck
         if(puck != null) {
-            mCirclePaint.setColor(COLORS[3]);
-            canvas.drawCircle(puck.x, puck.y, puck.radius, mCirclePaint); //drawing puck
+            mPaint.setColor(COLORS[3]); //make orange
+            canvas.drawCircle(puck.x, puck.y, puck.radius, mPaint); //drawing puck
         }
+        
+        //draw goals
+        mPaint.setColor(COLORS[3]);
+        canvas.drawRect(malletDown.gs,scale*5,malletDown.ge,0,mPaint);
 
         //reset booleans, otherwise they would never be drawn again
         mDownTouch = false;
@@ -347,7 +358,7 @@ public class TouchDisplayView extends View {
      */
 
 
-    private Paint mCirclePaint = new Paint();
+    private Paint mPaint = new Paint();
     private Paint mTextPaint = new Paint();
 
     private static final int BACKGROUND_ACTIVE = Color.DKGRAY;
@@ -358,7 +369,7 @@ public class TouchDisplayView extends View {
     private Paint mBorderPaint = new Paint();
     private float mBorderWidth;
 
-    public final int[] COLORS = {   //not used anymore
+    public final int[] COLORS = {
             0xFF33B5E5, 0xFFAA66CC, 0xFF99CC00, 0xFFFFBB33, 0xFFFF4444,
             0xFF0099CC, 0xFF9933CC, 0xFF669900, 0xFFFF8800, 0xFFCC0000
     };
@@ -395,16 +406,16 @@ public class TouchDisplayView extends View {
         Bitmap curBitmap;
         if(data == malletUp & !mUpTouch) {
             mUpTouch = true;    //only one circle in the upper region of the board
-            //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mCirclePaint);
-            //canvas.drawBitmap(mBitmapP, data.x+data.radius, data.y+data.radius, mCirclePaint);
+            //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mPaint);
+            //canvas.drawBitmap(mBitmapP, data.x+data.radius, data.y+data.radius, mPaint);
             curBitmap = mBitmapP;
         } else if(data == malletDown & !mDownTouch) {
             mDownTouch = true;  //only one circle in the down region of the board
-            //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mCirclePaint);
-            //canvas.drawBitmap(mBitmapG, data.x, data.y, mCirclePaint);
+            //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mPaint);
+            //canvas.drawBitmap(mBitmapG, data.x, data.y, mPaint);
             curBitmap = mBitmapG;
         } else return;
-        canvas.drawBitmap(curBitmap, data.x-data.radius, data.y-data.radius, mCirclePaint);
+        canvas.drawBitmap(curBitmap, data.x-data.radius, data.y-data.radius, mPaint);
     }
 
     /*
@@ -485,11 +496,11 @@ public class TouchDisplayView extends View {
     private void puckPhys(TouchPoint data) {
         //loop for checking a collision of mallet with puck
         float  power = checkCollision(data);
-        double friction = 0.96;      //TODO find proper friction
+        double friction = 0.97;      //TODO find proper friction
         Log.i("Power: ", Float.toString(power));
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/60*(puck.x - data.x );   //determining puck speed changes
-            puck.verticalMov = power/60*(puck.y - data.y);
+            puck.horizontalMov = power/70*(puck.x - data.x );   //determining puck speed changes
+            puck.verticalMov = power/70*(puck.y - data.y);
 
         }
         else {  //slow down cowboy
@@ -505,7 +516,7 @@ public class TouchDisplayView extends View {
         puck.x += puck.horizontalMov;
         puck.y += puck.verticalMov;
 
-        //TODO boundaries
+        //boundaries
         if (puck.x-puck.radius < 0 ) {
             puck.horizontalMov *= -1;
             puck.x = puck.radius;
