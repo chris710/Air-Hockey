@@ -95,14 +95,20 @@ public class TouchDisplayView extends View {
         public boolean border = false;
         public boolean init = false;
 
-        public TouchPoint(float x, float y, int id, float radius) {
+        public TouchPoint(float x, float y, int id, float radius, float gs, float ge) {
             this.radius = radius;
             this.x = x;
             this.y = y;
             this.id = id;
+            this.ge = ge;
+            this.gs = gs;
             Log.i("New TouchPoint created at x = ",Float.toString(x-this.radius));
-
-
+        }
+        public TouchPoint(float x, float y, int id) {
+            this.x = x;
+            this.y = y;
+            this.id = id;
+            Log.i("New TouchPoint created at x = ",Float.toString(x-this.radius));
         }
     }
 
@@ -162,9 +168,9 @@ public class TouchDisplayView extends View {
                  * the pointer identifier of this touch from the first index
                  * within the MotionEvent object.
                  */
-                //TODO deleting touchpoints is a very bad idea, as they need to stay physical throughout the game
+
                 int id = event.getPointerId(0);
-                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
+                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id);    //TODO change malletRadius or even better change this whole mechanism
                 /*
                  * Store the data under its pointer identifier. The pointer
                  * number stays consistent for the duration of a gesture,
@@ -198,7 +204,7 @@ public class TouchDisplayView extends View {
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
-                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
+                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);    //TODO change malletRadius or even better change this whole mechanism
 
                 /*
                  * Store the data under its pointer identifier. The index of
@@ -265,7 +271,7 @@ public class TouchDisplayView extends View {
                     // get pointer id for data stored at this index
                     int id = event.getPointerId(index);
 
-                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id,malletRadius);    //TODO change malletRadius or even better change this whole mechanism
+                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);    //TODO change malletRadius or even better change this whole mechanism
                     try {
                         mTouches.remove(id);
                     } catch (IndexOutOfBoundsException e) {
@@ -310,13 +316,13 @@ public class TouchDisplayView extends View {
 
 
             //setting appropriate points
-            TouchPoint data = new TouchPoint(x, 3*y, 3,malletRadius);
+            TouchPoint data = new TouchPoint(x, 3*y, 3,malletRadius,x/2,3*x/2);
             data.down = true;
             malletDown = data;
             malletDown.init = true;
 
             //second point
-            TouchPoint data2 = new TouchPoint(x, 1*y, 4, malletRadius);
+            TouchPoint data2 = new TouchPoint(x, 1*y, 4, malletRadius,x/2,3*x/2);
             data2.up = true;
             malletUp = data2;
             malletUp.init = true;
@@ -352,8 +358,9 @@ public class TouchDisplayView extends View {
         }
         
         //draw goals
-        mPaint.setColor(COLORS[3]);
+        mPaint.setColor(COLORS[4]);
         canvas.drawRect(malletDown.gs,scale*5,malletDown.ge,0,mPaint);
+        canvas.drawRect(malletUp.gs,scale*5,malletUp.ge,0,mPaint);
 
         //reset booleans, otherwise they would never be drawn again
         mDownTouch = false;
@@ -461,18 +468,30 @@ public class TouchDisplayView extends View {
             //reset mallets when no one touched the display
             if (data.up && malletUp.init) {
                 if(malletDown.init) {
+                    data.radius = malletUp.radius;
+                    data.gs = malletUp.gs;
+                    data.ge = malletUp.ge;
                     malletUp = data;
                     malletDown.id = 1;
                 } else if(malletDown.id != data.id) {
+                    data.radius = malletUp.radius;
+                    data.ge = malletUp.ge;
+                    data.gs = malletUp.gs;
                     malletUp = data;
                 }
 
                 return;
             } else if(data.down && malletDown.init) {
                 if (malletUp.init) {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletDown = data;
                     malletUp.id = 1;
                 } else if(malletUp.id != data.id) {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletDown = data;
                 }
                 return;
@@ -481,14 +500,26 @@ public class TouchDisplayView extends View {
            //are there new positions for the pointers
             if (data.id == malletUp.id) {
                 if(data.border | data.down) {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletUp.x = data.x;
                 } else {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
                 if(data.border | data.up) {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletDown.x = data.x;
                 } else {
+                    data.radius = malletDown.radius;
+                    data.gs = malletDown.gs;
+                    data.ge = malletDown.ge;
                     malletDown = data;
                 }
             }
