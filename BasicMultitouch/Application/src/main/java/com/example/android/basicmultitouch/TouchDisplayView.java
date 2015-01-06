@@ -719,17 +719,40 @@ public class TouchDisplayView extends View {
             for (int i = 0; i < mTouches.size(); i++) {
                 if (mTouches.get(i).down){
                     if(down){
-                        //malletDown.
+                        scaling(malletDown);
+                        scaleList.clear();
+                        return;
                     }
                     down = true;
                 } else if(mTouches.get(i).up) {
                     if(up) {
-
+                        scaling(malletUp);
+                        scaleList.clear();
+                        return;
                     }
                     up = true;
                 }
             }
         }
+    }
+
+    /*help function for scaling a mallet
+
+     */
+    private void scaling(TouchPoint mallet) {
+        float val = scaleList.getLast() - scaleList.getFirst();
+        //if(val < 1) {
+            if(mallet.radius == malletRadius){
+                mallet.radius =  malletRadius * (float)1.5;
+                mallet.gs = display.widthPixels / 5;
+                mallet.ge = 4 * display.widthPixels / 5;
+            } else {
+                mallet.radius = malletRadius;
+                mallet.ge = 3 * display.widthPixels / 4;
+                mallet.gs = display.widthPixels / 4;
+            }
+        //}
+
     }
 
 }
