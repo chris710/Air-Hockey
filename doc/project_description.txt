@@ -5,7 +5,7 @@ Overview:
 Features:
 	- puck moves are determined by bouncing off the walls and mallets
 	- simultaneous moving of the mallets by players
-	- mallets and goals can be enlarged/dimished by pinch gesture
+	- mallets and goals can be enlarged/diminished by pinch gesture
 	- with double-finger swipe the player's goal can be moved left/right
 	- double-touch on a screen changes the physics of the puck
     

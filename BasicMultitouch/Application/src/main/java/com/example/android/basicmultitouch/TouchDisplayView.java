@@ -27,6 +27,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.util.LinkedList;
 
@@ -485,20 +486,23 @@ public class TouchDisplayView extends View {
         //loop for checking a collision of mallet with puck
         float  power = checkCollision(data);
         Log.i("Power: ", Float.toString(power));
-        /*if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/100*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
-            puck.verticalMov = power/100*(puck.y - data.y);
-            puck.x += puck.horizontalMov;
-            puck.y += puck.verticalMov;
+        if (power != -1) {  //there is a collision
+            puck.horizontalMov = power/10*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
+            puck.verticalMov = power/10*(puck.y - data.y);
+
         }
         else {  //slow down cowboy
-            if(puck.horizontalMov>0) puck.horizontalMov--;
-            if(puck.horizontalMov<0) puck.horizontalMov++;
-            if(puck.verticalMov>0) puck.verticalMov--;
-            if(puck.verticalMov<0) puck.verticalMov++;
-        }*/
-        //Log.i("hor: ", Float.toString(puck.horizontalMov));
-        //Log.i("ver: ", Float.toString(puck.verticalMov));
+            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov*=0.9;
+            //if(puck.horizontalMov<0) puck.horizontalMov*=0.9;
+            if(puck.verticalMov>0 || puck.verticalMov<0) puck.verticalMov*=0.9;
+            //if(puck.verticalMov<0) puck.verticalMov*=0.9;
+        }
+        Log.i("hor: ", Float.toString(puck.horizontalMov));
+        Log.i("ver: ", Float.toString(puck.verticalMov));
+
+        //change puck position
+        puck.x += puck.horizontalMov;
+        puck.y += puck.verticalMov;
 
         //TODO boundaries
         if (puck.x-puck.radius < 0 || puck.x+puck.radius > display.widthPixels) {
@@ -515,7 +519,7 @@ public class TouchDisplayView extends View {
      */
     private float checkCollision(TouchPoint data){
         if(Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2))<=data.radius+puck.radius)
-            return (float)Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2));
+            return (float)(data.radius + puck.radius - Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2)));
         return -1;
     }
 
