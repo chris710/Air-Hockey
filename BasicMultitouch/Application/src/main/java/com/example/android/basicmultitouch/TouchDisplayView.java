@@ -98,6 +98,7 @@ public class TouchDisplayView extends View {
 
         }
 
+        //TODO delete this mess if it's unnecessary
         // arrray of pointer position history
         /*public PointF[] history = new PointF[HISTORY_COUNT];
 
