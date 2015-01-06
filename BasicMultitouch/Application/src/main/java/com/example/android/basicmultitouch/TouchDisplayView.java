@@ -83,7 +83,7 @@ public class TouchDisplayView extends View {
         public float x;
         public float y;
         public float radius;
-        public Integer score;       //the score of the player
+        private Integer score;       //the score of the player
 
         //goal fields
         public float gs;    //goal start
@@ -112,6 +112,18 @@ public class TouchDisplayView extends View {
             this.y = y;
             this.id = id;
             //Log.i("New TouchPoint created at x = ",Float.toString(x-this.radius));
+        }
+
+        public void addScore() {
+            this.score++;
+        }
+
+        public Integer getScore() {
+            return this.score;
+        }
+
+        public void setScore(Integer newScore) {
+            this.score = newScore;
         }
     }
 
@@ -315,7 +327,7 @@ public class TouchDisplayView extends View {
     // END_INCLUDE(onTouchEvent)
 
     @Override
-    //I guess here is where we initialize things
+    //I guess here is where we draw things
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -364,6 +376,20 @@ public class TouchDisplayView extends View {
         /********
          *  draw the data to the canvas
          ********/
+        //draw line in the center
+        mPaint.setARGB(128,255,255,255);
+        canvas.drawLine(0,display.heightPixels/2,display.widthPixels,display.heightPixels/2,mPaint);
+
+        //draw the score text int the middle
+        //canvas.scale(1f, -1f, cx, cy);
+        mPaint.setTextSize(50f);
+        canvas.drawText(Integer.toString(malletUp.getScore())+":"+Integer.toString(malletDown.getScore()), display.widthPixels/4, display.heightPixels/2, mPaint);
+
+        //draw goals
+        mPaint.setColor(COLORS[0]);
+        canvas.drawRect(malletDown.gs,display.heightPixels-scale*5,malletDown.ge,display.heightPixels,mPaint);
+        canvas.drawRect(malletUp.gs,0,malletUp.ge,scale*5,mPaint);
+
         //draw mallets
         drawCircle(canvas, malletDown);
         drawCircle(canvas, malletUp);
@@ -373,11 +399,6 @@ public class TouchDisplayView extends View {
             mPaint.setColor(COLORS[3]); //make orange
             canvas.drawCircle(puck.x, puck.y, puck.radius, mPaint); //drawing puck
         }
-        
-        //draw goals
-        mPaint.setColor(COLORS[0]);
-        canvas.drawRect(malletDown.gs,display.heightPixels-scale*5,malletDown.ge,display.heightPixels,mPaint);
-        canvas.drawRect(malletUp.gs,0,malletUp.ge,scale*5,mPaint);
 
     }
 
@@ -447,7 +468,7 @@ public class TouchDisplayView extends View {
     }
 
     /*
-      * TODO change that name as I guess there will be all the physics there
+      * function for detecting where the touchPoints belong
       * function for setting the attributes up and down of the TouchPoints inside mTouches
       * helper function for onDraw, the first time Canvas is used
       * @param canvas
@@ -478,14 +499,14 @@ public class TouchDisplayView extends View {
                     data.radius = malletUp.radius;
                     data.gs = malletUp.gs;
                     data.ge = malletUp.ge;
-                    data.score = malletUp.score;
+                    data.setScore(malletUp.getScore());
                     malletUp = data;
                     malletDown.id = 1;
                 } else if(malletDown.id != data.id) {
                     data.radius = malletUp.radius;
                     data.ge = malletUp.ge;
                     data.gs = malletUp.gs;
-                    data.score = malletUp.score;
+                    data.setScore(malletUp.getScore());
                     malletUp = data;
                 }
 
@@ -495,14 +516,14 @@ public class TouchDisplayView extends View {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
-                    data.score = malletDown.score;
+                    data.setScore(malletDown.getScore());
                     malletDown = data;
                     malletUp.id = 1;
                 } else if(malletUp.id != data.id) {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
-                    data.score = malletDown.score;
+                    data.setScore(malletDown.getScore());
                     malletDown = data;
                 }
                 return;
@@ -517,7 +538,7 @@ public class TouchDisplayView extends View {
                     data.radius = malletUp.radius;
                     data.gs = malletUp.gs;
                     data.ge = malletUp.ge;
-                    data.score = malletUp.score;
+                    data.setScore(malletUp.getScore());
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
@@ -528,7 +549,7 @@ public class TouchDisplayView extends View {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
-                    data.score = malletDown.score;
+                    data.setScore(malletDown.getScore());
                     malletDown = data;
                 }
             }
@@ -546,8 +567,8 @@ public class TouchDisplayView extends View {
      */
     private void puckPhys(TouchPoint data) {
         float  power = checkCollision(data);
-        double friction = 0.98;      //TODO find proper friction
-        /*Log.i("Power: ", Float.toString(power));*/
+        double friction = 0.98;
+
         if (power != -1) {  //there is a collision
             puck.horizontalMov = power/powerReduction*(puck.x - data.x );   //determining puck speed changes
             puck.verticalMov = power/powerReduction*(puck.y - data.y);
@@ -602,7 +623,7 @@ public class TouchDisplayView extends View {
 
             if(puck.y<0) { //in case of score reset the puck and add score
                 puck.reset();
-                malletDown.score++;      //masterpiece of OO programming
+                malletDown.addScore();      //masterpiece of OO programming
             }
         }
         if (puck.y+puck.radius > display.heightPixels) {    //lower edge
@@ -627,7 +648,7 @@ public class TouchDisplayView extends View {
 
             if(puck.y>display.heightPixels) { //in case of score reset the puck and add score
                 puck.reset();
-                malletUp.score++;      //masterpiece of OO programming
+                malletUp.addScore();      //masterpiece of OO programming
             }
 
         }
