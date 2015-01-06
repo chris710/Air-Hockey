@@ -57,6 +57,8 @@ public class TouchDisplayView extends View {
 
     //for height/size of the actual display
     DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
+    //display height and width
+    int width, height;
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
@@ -69,10 +71,8 @@ public class TouchDisplayView extends View {
 
 
     /**
-     * Holds data related to a touch pointer, including its current position,
-     * pressure and historical positions. Objects are allocated through an
-     * object pool using {@link #obtain()} and {@link #recycle()} to reuse
-     * existing objects.
+     * Holds data related to a touch pointer, including its current position
+     * and historical positions.
      */
     final class TouchPoint {
 
@@ -99,58 +99,6 @@ public class TouchDisplayView extends View {
 
 
         }
-
-        //TODO delete this mess if it's unnecessary
-        // arrray of pointer position history
-        /*public PointF[] history = new PointF[HISTORY_COUNT];
-
-        private static final int MAX_POOL_SIZE = 10;
-        private static final SimplePool<TouchHistory> sPool =
-                new SimplePool<TouchHistory>(MAX_POOL_SIZE);
-
-        public static TouchHistory obtain(float x, float y) {
-            TouchHistory data = sPool.acquire();
-            if (data == null) {
-                data = new TouchHistory();
-            }
-
-            data.setTouch(x, y);
-
-            return data;
-        }
-
-        public TouchHistory() {
-
-            // initialise history array
-            for (int i = 0; i < HISTORY_COUNT; i++) {
-                history[i] = new PointF();
-            }
-        }
-
-        public void setTouch(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-
-
-        *//**
-         * Add a point to its history. Overwrites oldest point if the maximum
-         * number of historical points is already stored.
-         *
-         * @param point
-         *//*
-        public void addHistory(float x, float y) {
-            PointF p = history[historyIndex];
-            p.x = x;
-            p.y = y;
-
-            historyIndex = (historyIndex + 1) % history.length;
-
-            if (historyCount < HISTORY_COUNT) {
-                historyCount++;
-            }
-        }*/
-
     }
 
 
@@ -333,13 +281,14 @@ public class TouchDisplayView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //setting scale
-        scale = display.widthPixels / 320;
-
         // Canvas background color
         canvas.drawColor(BACKGROUND_ACTIVE);
 
         if(!mFirstTouch){
+            //setting scale
+            scale = display.widthPixels / 320;
+
+
             // coordinates for drawing if there was no touch yet
             //initial mallets
             float x = display.widthPixels / 2;
@@ -365,6 +314,10 @@ public class TouchDisplayView extends View {
             Puck data3 = new Puck(x,2*y);
             data3.radius = scale*40;
             puck = data3;
+
+            //setting width and height of the display for later purposes
+            width = display.widthPixels - malletRadius;
+            height = display.heightPixels - malletRadius;
 
         } else if (mHasTouch)  {
             //if somone is touching the display, the points could differ
@@ -427,8 +380,6 @@ public class TouchDisplayView extends View {
         mBorderPaint.setStrokeWidth(mBorderWidth);
         mBorderPaint.setColor(INACTIVE_BORDER_COLOR);
         mBorderPaint.setStyle(Paint.Style.STROKE);
-
-
     }
 
     /**
@@ -453,29 +404,6 @@ public class TouchDisplayView extends View {
             curBitmap = mBitmapG;
         } else return;
         canvas.drawBitmap(curBitmap, data.x-data.radius, data.y-data.radius, mCirclePaint);
-
-        /*
-         * Draw the circle, size scaled to its pressure. Pressure is clamped to
-         * 1.0 max to ensure proper drawing. (Reported pressure values can
-         * exceed 1.0, depending on the calibration of the touch screen).
-         */
-        //float pressure = Math.min(data.pressure, 1f);
-
-
-        //canvas.drawCircle(data.x, data.y, radius,  mCirclePaint);
-        // Load basic bubble Bitmap
-
-
-        // draw all historical points with a lower alpha value
-        /*mCirclePaint.setAlpha(125);
-        for (int j = 0; j < data.history.length && j < data.historyCount; j++) {
-            PointF p = data.history[j];
-            canvas.drawCircle(p.x, p.y, mCircleHistoricalRadius, mCirclePaint);
-        }*/
-
-        // draw its label next to the main circle
-        /*canvas.drawText(data.label, data.x + radius, data.y
-                - radius, mTextPaint);*/
     }
 
     /*
@@ -486,35 +414,15 @@ public class TouchDisplayView extends View {
       * @param canvas
      */
     private void decideAttributes(Canvas canvas) {
-        float border = display.heightPixels /2 - malletRadius;
-
-        //display height and width
-        int width, height;
-
-        width = display.widthPixels - 2* malletRadius;
-        height = display.heightPixels - 2* malletRadius;
+        float border = display.heightPixels /2;
 
 
         //TODO what does this for loop does? write in comment
         for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
             TouchPoint data = mTouches.get(i);
+
             //is the mallet inside the view?
-            if (data.x < 0 | data.y < 0 ) {
-                if(data.x < 0) {
-                    data.x = 0;
-                }
-                if(data.y < 0) {
-                    data.y = 0;
-                };
-            }
-            if (data.x > width | data.y > height) {
-                if(data.x > width) {
-                    data.x = width;
-                }
-                if(data.y > height) {
-                    data.y = height;
-                }
-            }
+            insideView(data);
 
             //is one of the attributes concerning which area they are in already set?
             if (!data.down & !data.up & !data.border) {
@@ -555,14 +463,12 @@ public class TouchDisplayView extends View {
                 if(data.border | data.down) {
                     malletUp.x = data.x;
                 } else {
-                    //mTouches.remove(i);
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
                 if(data.border | data.up) {
                     malletDown.x = data.x;
                 } else {
-                    //mTouches.remove(i);
                     malletDown = data;
                 }
             }
@@ -570,14 +476,6 @@ public class TouchDisplayView extends View {
 
         puckPhys(malletDown);
         puckPhys(malletUp);
-
-        /*if (mTouches.getLast().border) {
-            return;
-        } else if (mTouches.getLast().up) {
-            malletUp = mTouches.getLast();
-        } else {
-            malletDown = mTouches.getLast();
-        }*/
     }
 
     /*
@@ -619,6 +517,30 @@ public class TouchDisplayView extends View {
         if(Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2))<=data.radius+puck.radius)
             return (float)Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2));
         return -1;
+    }
+
+    /*
+    *small function to determine if the given TouchPoint is inside the display, and if not
+    * change the x or y attributes so it is inside the display
+    * @param TouchPoint data
+     */
+    private void insideView(TouchPoint data) {
+        if (data.x < malletRadius | data.y < malletRadius ) {
+            if(data.x < malletRadius) {
+                data.x = malletRadius;
+            }
+            if(data.y < malletRadius) {
+                data.y = malletRadius;
+            };
+        }
+        if (data.x > width | data.y > height) {
+            if(data.x > width) {
+                data.x = width;
+            }
+            if(data.y > height) {
+                data.y = height;
+            }
+        }
     }
 
 }
