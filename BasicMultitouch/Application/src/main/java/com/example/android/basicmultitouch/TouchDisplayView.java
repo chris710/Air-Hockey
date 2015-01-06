@@ -304,7 +304,7 @@ public class TouchDisplayView extends View {
     // END_INCLUDE(onTouchEvent)
 
     @Override
-    //I guess here is where we initialize things
+    //I guess here is where we draw things
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -354,6 +354,20 @@ public class TouchDisplayView extends View {
         /********
          *  draw the data to the canvas
          ********/
+        //draw line in the center
+        mPaint.setARGB(128,255,255,255);
+        canvas.drawLine(0,display.heightPixels/2,display.widthPixels,display.heightPixels/2,mPaint);
+
+        //draw the score text int the middle
+        //canvas.scale(1f, -1f, cx, cy);
+        mPaint.setTextSize(50f);
+        canvas.drawText(Integer.toString(malletUp.score)+":"+Integer.toString(malletDown.score), display.widthPixels/4, display.heightPixels/2, mPaint);
+
+        //draw goals
+        mPaint.setColor(COLORS[0]);
+        canvas.drawRect(malletDown.gs,display.heightPixels-scale*5,malletDown.ge,display.heightPixels,mPaint);
+        canvas.drawRect(malletUp.gs,0,malletUp.ge,scale*5,mPaint);
+
         //draw mallets
         drawCircle(canvas, malletDown);
         drawCircle(canvas, malletUp);
@@ -364,15 +378,10 @@ public class TouchDisplayView extends View {
             canvas.drawCircle(puck.x, puck.y, puck.radius, mPaint); //drawing puck
         }
         
-        //draw goals
-        mPaint.setColor(COLORS[0]);
-        canvas.drawRect(malletDown.gs,display.heightPixels-scale*5,malletDown.ge,display.heightPixels,mPaint);
-        canvas.drawRect(malletUp.gs,0,malletUp.ge,scale*5,mPaint);
 
         //reset booleans, otherwise they would never be drawn again
         mDownTouch = false;
         mUpTouch = false;
-
     }
 
     /*
@@ -441,7 +450,7 @@ public class TouchDisplayView extends View {
     }
 
     /*
-      * TODO change that name as I guess there will be all the physics there
+      * function for detecting where the touchPoints belong
       * function for setting the attributes up and down of the TouchPoints inside mTouches
       * helper function for onDraw, the first time Canvas is used
       * @param canvas
@@ -539,7 +548,7 @@ public class TouchDisplayView extends View {
      */
     private void puckPhys(TouchPoint data) {
         float  power = checkCollision(data);
-        double friction = 0.98;      //TODO find proper friction
+        double friction = 0.98;
         Log.i("Power: ", Float.toString(power));
         if (power != -1) {  //there is a collision
             puck.horizontalMov = power/powerReduction*(puck.x - data.x );   //determining puck speed changes
