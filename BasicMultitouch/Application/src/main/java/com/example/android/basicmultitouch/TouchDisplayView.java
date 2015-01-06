@@ -359,9 +359,9 @@ public class TouchDisplayView extends View {
         }
         
         //draw goals
-        mPaint.setColor(COLORS[4]);
-        canvas.drawRect(malletDown.gs,scale*5,malletDown.ge,0,mPaint);
-        canvas.drawRect(malletUp.gs,scale*5,malletUp.ge,0,mPaint);
+        mPaint.setColor(COLORS[0]);
+        canvas.drawRect(malletDown.gs,display.heightPixels-scale*5,malletDown.ge,display.heightPixels,mPaint);
+        canvas.drawRect(malletUp.gs,0,malletUp.ge,scale*5,mPaint);
 
         //reset booleans, otherwise they would never be drawn again
         mDownTouch = false;
