@@ -487,12 +487,12 @@ public class TouchDisplayView extends View {
         float  power = checkCollision(data);
         Log.i("Power: ", Float.toString(power));
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/10*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
+            puck.horizontalMov = power/10*(puck.x - data.x );   //determining puck speed changes  //TODO adjust
             puck.verticalMov = power/10*(puck.y - data.y);
 
         }
         else {  //slow down cowboy
-            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov*=0.9;
+            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov*=0.9;  //TODO find proper friction
             //if(puck.horizontalMov<0) puck.horizontalMov*=0.9;
             if(puck.verticalMov>0 || puck.verticalMov<0) puck.verticalMov*=0.9;
             //if(puck.verticalMov<0) puck.verticalMov*=0.9;
@@ -505,11 +505,21 @@ public class TouchDisplayView extends View {
         puck.y += puck.verticalMov;
 
         //TODO boundaries
-        if (puck.x-puck.radius < 0 || puck.x+puck.radius > display.widthPixels) {
+        if (puck.x-puck.radius < 0 ) {
             puck.horizontalMov *= -1;
+            puck.x = puck.radius;
         }
-        if (puck.y-puck.radius < 0 || puck.y+puck.radius > display.heightPixels) {
+        if (puck.x+puck.radius > display.widthPixels) {
+            puck.horizontalMov *= -1;
+            puck.x = display.widthPixels - puck.radius;
+        }
+        if (puck.y-puck.radius < 0 ) {
             puck.verticalMov *= -1;
+            puck.y = puck.radius;
+        }
+        if (puck.y+puck.radius > display.heightPixels) {
+            puck.verticalMov *= -1;
+            puck.y = display.heightPixels - puck.radius;
         }
     }
 
@@ -535,7 +545,7 @@ public class TouchDisplayView extends View {
             }
             if(data.y < malletRadius) {
                 data.y = malletRadius;
-            };
+            }
         }
         if (data.x > width | data.y > height) {
             if(data.x > width) {
