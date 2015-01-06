@@ -97,6 +97,7 @@ public class TouchDisplayView extends View {
 
         public TouchPoint(float x, float y, int id, float radius, float gs, float ge) {
             this.radius = radius;
+            this.score = 0;
             this.x = x;
             this.y = y;
             this.id = id;
@@ -431,7 +432,7 @@ public class TouchDisplayView extends View {
             //canvas.drawBitmap(mBitmapG, data.x, data.y, mPaint);
             curBitmap = mBitmapG;
         } else return;
-        canvas.drawBitmap(curBitmap, data.x-data.radius, data.y-data.radius, mPaint);
+        canvas.drawBitmap(curBitmap, data.x - data.radius, data.y - data.radius, mPaint);
     }
 
     /*
@@ -472,12 +473,14 @@ public class TouchDisplayView extends View {
                     data.radius = malletUp.radius;
                     data.gs = malletUp.gs;
                     data.ge = malletUp.ge;
+                    data.score = malletUp.score;
                     malletUp = data;
                     malletDown.id = 1;
                 } else if(malletDown.id != data.id) {
                     data.radius = malletUp.radius;
                     data.ge = malletUp.ge;
                     data.gs = malletUp.gs;
+                    data.score = malletUp.score;
                     malletUp = data;
                 }
 
@@ -487,12 +490,14 @@ public class TouchDisplayView extends View {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletDown = data;
                     malletUp.id = 1;
                 } else if(malletUp.id != data.id) {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletDown = data;
                 }
                 return;
@@ -504,11 +509,13 @@ public class TouchDisplayView extends View {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletUp.x = data.x;
                 } else {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
@@ -516,11 +523,13 @@ public class TouchDisplayView extends View {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletDown.x = data.x;
                 } else {
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
+                    data.score = malletUp.score;
                     malletDown = data;
                 }
             }
@@ -536,13 +545,12 @@ public class TouchDisplayView extends View {
      *  changing movement of puck
      */
     private void puckPhys(TouchPoint data) {
-        //loop for checking a collision of mallet with puck
         float  power = checkCollision(data);
-        double friction = 0.97;      //TODO find proper friction
+        double friction = 0.98;      //TODO find proper friction
         Log.i("Power: ", Float.toString(power));
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/70*(puck.x - data.x );   //determining puck speed changes
-            puck.verticalMov = power/70*(puck.y - data.y);
+            puck.horizontalMov = power/90*(puck.x - data.x );   //determining puck speed changes
+            puck.verticalMov = power/90*(puck.y - data.y);
 
         }
         else {  //slow down cowboy
@@ -558,23 +566,39 @@ public class TouchDisplayView extends View {
         puck.x += puck.horizontalMov;
         puck.y += puck.verticalMov;
 
-        //boundaries
-        if (puck.x-puck.radius < 0 ) {
+        //boundaries TODO goals
+        if (puck.x-puck.radius < 0 ) {  //left edge
             puck.horizontalMov *= -1;
             puck.x = puck.radius;
         }
-        if (puck.x+puck.radius > display.widthPixels) {
+        if (puck.x+puck.radius > display.widthPixels) {     //right edge
             puck.horizontalMov *= -1;
             puck.x = display.widthPixels - puck.radius;
         }
-        if (puck.y-puck.radius < 0 ) {
-            puck.verticalMov *= -1;
-            puck.y = puck.radius;
+        if (puck.y-puck.radius < 0 ) {  //upper edge
+            //if(puck.x - puck.radius > malletUp.gs && puck.x + puck.radius >malletUp.ge) // fits clearly//TODO goal TODO reinit puck TODO add score
+            if( ((puck.x + puck.radius)<malletUp.gs && puck.x>malletUp.gs) || (puck.x - puck.radius>malletUp.ge && puck.x<malletUp.ge) ) {   //angled bounce
+                float nx = puck.x - data.x;
+                float ny = puck.y - data.y;
+                double length = Math.sqrt(nx * nx + ny * ny);
+                nx /= length;
+                ny /= length;
+
+                float projection = puck.horizontalMov* nx + puck.verticalMov* ny;
+                puck.horizontalMov -= 2 * projection * nx;
+                puck.verticalMov -= 2 * projection * ny;
+
+                //puck.verticalMov *= -;
+            } else if( !( puck.x - puck.radius > malletUp.gs && puck.x + puck.radius >malletUp.ge) ) {        //not in a goal
+                puck.verticalMov *= -1;
+                puck.y = puck.radius;
+            }   //
         }
         if (puck.y+puck.radius > display.heightPixels) {
             puck.verticalMov *= -1;
             puck.y = display.heightPixels - puck.radius;
         }
+
     }
 
     /*
