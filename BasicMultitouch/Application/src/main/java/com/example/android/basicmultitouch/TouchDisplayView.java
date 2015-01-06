@@ -90,8 +90,10 @@ public class TouchDisplayView extends View {
 
         public TouchPoint(float x, float y, int id, float radius) {
             this.radius = radius;
-            this.x = x - this.radius;
-            this.y = y - this.radius;
+            //this.x = x - this.radius;
+            //this.y = y - this.radius;
+            this.x = x;
+            this.y = y;
             this.id = id;
             Log.i("New TouchPoint created at x = ",Float.toString(x-this.radius));
 
@@ -170,6 +172,8 @@ public class TouchDisplayView extends View {
         Puck(float x, float y) {
             this.x = x;
             this.y = y;
+            this.verticalMov = 0;
+            this.horizontalMov = 0;
         }
     }
 
@@ -388,8 +392,6 @@ public class TouchDisplayView extends View {
      * Below are only helper methods and variables required for drawing.
      */
 
-    // radius of active touch circle in dp
-    private static final float CIRCLE_RADIUS_DP = 75f;
 
     private Paint mCirclePaint = new Paint();
     private Paint mTextPaint = new Paint();
@@ -438,24 +440,19 @@ public class TouchDisplayView extends View {
      * @param data
      */
     protected void drawCircle(Canvas canvas, TouchPoint data) {
-        //set color of circle/ set picture depending on who they are = upper boeard or down half
-        int color = COLORS[0];
-
+        Bitmap curBitmap;
         if(data == malletUp & !mUpTouch) {
-            color = COLORS[1];
             mUpTouch = true;    //only one circle in the upper region of the board
             //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mCirclePaint);
-            canvas.drawBitmap(mBitmapP, data.x, data.y, mCirclePaint);
-
+            //canvas.drawBitmap(mBitmapP, data.x+data.radius, data.y+data.radius, mCirclePaint);
+            curBitmap = mBitmapP;
         } else if(data == malletDown & !mDownTouch) {
             mDownTouch = true;  //only one circle in the down region of the board
             //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mCirclePaint);
-            canvas.drawBitmap(mBitmapG, data.x, data.y, mCirclePaint);
-
+            //canvas.drawBitmap(mBitmapG, data.x, data.y, mCirclePaint);
+            curBitmap = mBitmapG;
         } else return;
-
-        Log.i("mTouches.size", Integer.toString(mTouches.size()));
-        mCirclePaint.setColor(color);
+        canvas.drawBitmap(curBitmap, data.x-data.radius, data.y-data.radius, mCirclePaint);
 
         /*
          * Draw the circle, size scaled to its pressure. Pressure is clamped to
@@ -571,7 +568,8 @@ public class TouchDisplayView extends View {
             }
         }
 
-        puckPhys();
+        puckPhys(malletDown);
+        puckPhys(malletUp);
 
         /*if (mTouches.getLast().border) {
             return;
@@ -585,35 +583,41 @@ public class TouchDisplayView extends View {
     /*
      *  changing movement of puck
      */
-    private void puckPhys() {
+    private void puckPhys(TouchPoint data) {
         //loop for checking a collision of mallet with puck
-        for (int i = 0; i < mTouches.size(); i++) {
-            TouchPoint data = mTouches.get(i);
-            float  power = checkCollision(data.x, data.y, data.radius);
-            Log.i("Power: ", Float.toString(power));
-            if (power != -1) {  //there is a collision
-                puck.horizontalMov = power/1000*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
-                puck.verticalMov = power/1000*(puck.y - data.y);
-                puck.x += puck.horizontalMov;
-                puck.y += puck.verticalMov;
-            }
-            else {  //slow down cowboy
-                if(puck.horizontalMov>0) puck.horizontalMov--;
-                if(puck.horizontalMov<0) puck.horizontalMov++;
-                if(puck.verticalMov>0) puck.verticalMov--;
-                if(puck.verticalMov<0) puck.verticalMov++;
-            }
+        float  power = checkCollision(data);
+        Log.i("Power: ", Float.toString(power));
+        /*if (power != -1) {  //there is a collision
+            puck.horizontalMov = power/100*(puck.x - data.x );   //determining puck speed changes  //TODO magic antigravity
+            puck.verticalMov = power/100*(puck.y - data.y);
+            puck.x += puck.horizontalMov;
+            puck.y += puck.verticalMov;
         }
+        else {  //slow down cowboy
+            if(puck.horizontalMov>0) puck.horizontalMov--;
+            if(puck.horizontalMov<0) puck.horizontalMov++;
+            if(puck.verticalMov>0) puck.verticalMov--;
+            if(puck.verticalMov<0) puck.verticalMov++;
+        }*/
+        //Log.i("hor: ", Float.toString(puck.horizontalMov));
+        //Log.i("ver: ", Float.toString(puck.verticalMov));
+
         //TODO boundaries
+        if (puck.x-puck.radius < 0 || puck.x+puck.radius > display.widthPixels) {
+            puck.horizontalMov *= -1;
+        }
+        if (puck.y-puck.radius < 0 || puck.y+puck.radius > display.heightPixels) {
+            puck.verticalMov *= -1;
+        }
     }
 
     /*
      * small function for determining whether there is a collision between a mallet an a puck
      * returns -1 if there is no collision and power value if there is
      */
-    private float checkCollision(float mx, float my, float mr){
-        if(Math.sqrt(Math.pow((mx-puck.x),2)+Math.pow((my-puck.y),2))<=mr+puck.radius)
-            return (float)Math.sqrt(Math.pow((mx-puck.x),2)+Math.pow((my-puck.y),2));
+    private float checkCollision(TouchPoint data){
+        if(Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2))<=data.radius+puck.radius)
+            return (float)Math.sqrt(Math.pow((data.x-puck.x),2)+Math.pow((data.y-puck.y),2));
         return -1;
     }
 
