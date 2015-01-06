@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -58,8 +59,6 @@ public class TouchDisplayView extends View {
 
     //for height/size of the actual display
     DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
-    //display height and width
-    int width, height;
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
@@ -70,6 +69,9 @@ public class TouchDisplayView extends View {
     Bitmap mBitmapG = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
     Bitmap mBitmapP = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_pink);
 
+    //for detecting scaling movement
+    private ScaleGestureDetector mScaleDetector;
+    private float mScaleFactor = 1.f;
 
     /**
      * Holds data related to a touch pointer, including its current position
@@ -143,6 +145,7 @@ public class TouchDisplayView extends View {
         // SparseArray for touch events, indexed by touch id
         mTouches = new LinkedList<TouchPoint>();
         DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
         initialisePaint();
     }
@@ -150,6 +153,9 @@ public class TouchDisplayView extends View {
     // BEGIN_INCLUDE(onTouchEvent)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        // Let the ScaleGestureDetector inspect all events.
+        mScaleDetector.onTouchEvent(event);
 
         final int action = event.getAction();
 
@@ -282,9 +288,6 @@ public class TouchDisplayView extends View {
             }
         }
 
-        /*// trigger redraw on UI thread
-        this.postInvalidate();*/
-
         return true;
     }
 
@@ -329,10 +332,6 @@ public class TouchDisplayView extends View {
             Puck data3 = new Puck(x,2*y);
             data3.radius = scale*30;
             puck = data3;
-
-            //setting width and height of the display for later purposes
-            width = display.widthPixels - malletRadius;
-            height = display.heightPixels - malletRadius;
 
             mInitialDraw = false;
 
@@ -580,20 +579,20 @@ public class TouchDisplayView extends View {
     * @param TouchPoint data
      */
     private void insideView(TouchPoint data) {
-        if (data.x < malletRadius | data.y < malletRadius ) {
-            if(data.x < malletRadius) {
-                data.x = malletRadius;
+        if (data.x < data.radius | data.y < data.radius ) {
+            if(data.x < data.radius) {
+                data.x = data.radius;
             }
-            if(data.y < malletRadius) {
-                data.y = malletRadius;
+            if(data.y < data.radius) {
+                data.y = data.radius;
             }
         }
-        if (data.x > width | data.y > height) {
-            if(data.x > width) {
-                data.x = width;
+        if (data.x > display.widthPixels - data.radius | data.y > display.heightPixels - data.radius) {
+            if(data.x > display.widthPixels - data.radius) {
+                data.x = display.widthPixels - data.radius;
             }
-            if(data.y > height) {
-                data.y = height;
+            if(data.y > display.heightPixels - data.radius) {
+                data.y = display.heightPixels - data.radius;
             }
         }
     }
@@ -611,6 +610,24 @@ public class TouchDisplayView extends View {
 
     private void reDraw() {
         this.postInvalidate();
+    }
+
+    /*
+    listener for cathcing scaling movements of the players
+     */
+    private class ScaleListener
+            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScaleFactor *= detector.getScaleFactor();
+
+            // Don't let the object get too small or too large.
+            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
+
+            Log.i("scaleFacor", Float.toString(mScaleFactor));
+            invalidate();
+            return true;
+        }
     }
 
 }
