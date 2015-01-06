@@ -485,16 +485,17 @@ public class TouchDisplayView extends View {
     private void puckPhys(TouchPoint data) {
         //loop for checking a collision of mallet with puck
         float  power = checkCollision(data);
+        double friction = 0.96;      //TODO find proper friction
         Log.i("Power: ", Float.toString(power));
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/10*(puck.x - data.x );   //determining puck speed changes  //TODO adjust
-            puck.verticalMov = power/10*(puck.y - data.y);
+            puck.horizontalMov = power/60*(puck.x - data.x );   //determining puck speed changes
+            puck.verticalMov = power/60*(puck.y - data.y);
 
         }
         else {  //slow down cowboy
-            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov*=0.9;  //TODO find proper friction
+            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov *= friction;
             //if(puck.horizontalMov<0) puck.horizontalMov*=0.9;
-            if(puck.verticalMov>0 || puck.verticalMov<0) puck.verticalMov*=0.9;
+            if(puck.verticalMov>0 || puck.verticalMov<0) puck.verticalMov *= friction;
             //if(puck.verticalMov<0) puck.verticalMov*=0.9;
         }
         Log.i("hor: ", Float.toString(puck.horizontalMov));
