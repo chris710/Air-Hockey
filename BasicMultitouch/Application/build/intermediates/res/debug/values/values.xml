@@ -26,7 +26,7 @@
     <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
     <!-- From: file:/C:/Users/asdf/Documents/GitHub/Air-Hockey/BasicMultitouch/Application/src/main/res/values/base-strings.xml -->
     <eat-comment/>
-    <string name="app_name">BasicMultitouch</string>
+    <string name="app_name">AHCI Air Hockey</string>
     <string name="intro_message">
         <![CDATA[
         
