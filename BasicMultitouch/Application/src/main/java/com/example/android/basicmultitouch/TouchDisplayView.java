@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -42,7 +43,6 @@ public class TouchDisplayView extends View {
     private LinkedList<TouchPoint> mTouches;
 
     // Is there an active touch?
-    private boolean mHasTouch = false;      //TODO if it is what I think it is then it should not be here
     private boolean mFirstTouch = false;    //initial state, before any interaction
     private boolean mInitialDraw = true;   //since onDraw sometimes gets used two times, this is for security measures
 
@@ -59,8 +59,6 @@ public class TouchDisplayView extends View {
 
     //for height/size of the actual display
     DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
-    //display height and width
-    int width, height;
 
     //scale for deciding how big the objects are going to be displayed
     public float scale;
@@ -71,6 +69,9 @@ public class TouchDisplayView extends View {
     Bitmap mBitmapG = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
     Bitmap mBitmapP = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_pink);
 
+    //for detecting scaling movement
+    private ScaleGestureDetector mScaleDetector;
+    private float mScaleFactor = 1.f;
 
     /**
      * Holds data related to a touch pointer, including its current position
@@ -138,13 +139,14 @@ public class TouchDisplayView extends View {
     }
 
 
-    //TODO what is this function for?
+    //constructor
     public TouchDisplayView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // SparseArray for touch events, indexed by touch id
         mTouches = new LinkedList<TouchPoint>();
         DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
         initialisePaint();
     }
@@ -152,6 +154,9 @@ public class TouchDisplayView extends View {
     // BEGIN_INCLUDE(onTouchEvent)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        // Let the ScaleGestureDetector inspect all events.
+        mScaleDetector.onTouchEvent(event);
 
         final int action = event.getAction();
 
@@ -171,7 +176,7 @@ public class TouchDisplayView extends View {
                  */
 
                 int id = event.getPointerId(0);
-                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id);    //TODO change malletRadius or even better change this whole mechanism
+                TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id);
                 /*
                  * Store the data under its pointer identifier. The pointer
                  * number stays consistent for the duration of a gesture,
@@ -180,7 +185,6 @@ public class TouchDisplayView extends View {
 
                 mTouches.add(id, data);
 
-                mHasTouch = true;
                 //activating the redrawing function, for continued drawing on canvas
                 if(mFirstTouch == false) {
                     mHandler.removeCallbacks(mTick);
@@ -205,7 +209,7 @@ public class TouchDisplayView extends View {
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
-                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);    //TODO change malletRadius or even better change this whole mechanism
+                TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
 
                 /*
                  * Store the data under its pointer identifier. The index of
@@ -231,7 +235,6 @@ public class TouchDisplayView extends View {
                  * touches.
                  */
                 mTouches.clear();
-                mHasTouch = false;
                 malletDown.init = true;
                 malletUp.init = true;
 
@@ -272,7 +275,7 @@ public class TouchDisplayView extends View {
                     // get pointer id for data stored at this index
                     int id = event.getPointerId(index);
 
-                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);    //TODO change malletRadius or even better change this whole mechanism
+                    TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
                     try {
                         mTouches.remove(id);
                     } catch (IndexOutOfBoundsException e) {
@@ -285,9 +288,6 @@ public class TouchDisplayView extends View {
                 break;
             }
         }
-
-        /*// trigger redraw on UI thread
-        this.postInvalidate();*/
 
         return true;
     }
@@ -333,10 +333,6 @@ public class TouchDisplayView extends View {
             Puck data3 = new Puck(x,2*y);
             data3.radius = scale*30;
             puck = data3;
-
-            //setting width and height of the display for later purposes
-            width = display.widthPixels - malletRadius;
-            height = display.heightPixels - malletRadius;
 
             mInitialDraw = false;
 
@@ -437,7 +433,6 @@ public class TouchDisplayView extends View {
 
     /*
       * TODO change that name as I guess there will be all the physics there
-      * TODO also divide content into smaller functions
       * function for setting the attributes up and down of the TouchPoints inside mTouches
       * helper function for onDraw, the first time Canvas is used
       * @param canvas
@@ -445,13 +440,8 @@ public class TouchDisplayView extends View {
     private void decideAttributes(Canvas canvas) {
         float border = display.heightPixels /2;
 
-
-        //TODO what does this for loop does? write in comment
-        for (int i = 0; i < mTouches.size(); i++) { //TODO always getLast()?
+        for (int i = 0; i < mTouches.size(); i++) {
             TouchPoint data = mTouches.get(i);
-
-            //is the mallet inside the view?
-            insideView(data);
 
             //is one of the attributes concerning which area they are in already set?
             if (!data.down & !data.up & !data.border) {
@@ -506,6 +496,7 @@ public class TouchDisplayView extends View {
            //are there new positions for the pointers
             if (data.id == malletUp.id) {
                 if(data.border | data.down) {
+<<<<<<< HEAD
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
@@ -516,14 +507,24 @@ public class TouchDisplayView extends View {
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
                     data.score = malletUp.score;
+=======
+                    malletUp.x = data.x;
+                } else {
+                    data.radius = malletUp.radius;
+                    data.gs = malletUp.gs;
+                    data.ge = malletUp.ge;
+>>>>>>> origin/master
                     malletUp = data;
                 }
             } else if (data.id == malletDown.id) {
                 if(data.border | data.up) {
+<<<<<<< HEAD
                     data.radius = malletDown.radius;
                     data.gs = malletDown.gs;
                     data.ge = malletDown.ge;
                     data.score = malletUp.score;
+=======
+>>>>>>> origin/master
                     malletDown.x = data.x;
                 } else {
                     data.radius = malletDown.radius;
@@ -534,6 +535,8 @@ public class TouchDisplayView extends View {
                 }
             }
         }
+        insideView(malletDown);
+        insideView(malletUp);
 
         puckPhys(malletDown);
         puckPhys(malletUp);
@@ -617,20 +620,20 @@ public class TouchDisplayView extends View {
     * @param TouchPoint data
      */
     private void insideView(TouchPoint data) {
-        if (data.x < malletRadius | data.y < malletRadius ) {
-            if(data.x < malletRadius) {
-                data.x = malletRadius;
+        if (data.x < data.radius | data.y < data.radius ) {
+            if(data.x < data.radius) {
+                data.x = data.radius;
             }
-            if(data.y < malletRadius) {
-                data.y = malletRadius;
+            if(data.y < data.radius) {
+                data.y = data.radius;
             }
         }
-        if (data.x > width | data.y > height) {
-            if(data.x > width) {
-                data.x = width;
+        if (data.x > display.widthPixels - data.radius | data.y > display.heightPixels - data.radius) {
+            if(data.x > display.widthPixels - data.radius) {
+                data.x = display.widthPixels - data.radius;
             }
-            if(data.y > height) {
-                data.y = height;
+            if(data.y > display.heightPixels - data.radius) {
+                data.y = display.heightPixels - data.radius;
             }
         }
     }
@@ -648,6 +651,24 @@ public class TouchDisplayView extends View {
 
     private void reDraw() {
         this.postInvalidate();
+    }
+
+    /*
+    listener for cathcing scaling movements of the players
+     */
+    private class ScaleListener
+            extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScaleFactor *= detector.getScaleFactor();
+
+            // Don't let the object get too small or too large.
+            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
+
+            Log.i("scaleFacor", Float.toString(mScaleFactor));
+            invalidate();
+            return true;
+        }
     }
 
 }
