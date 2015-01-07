@@ -70,6 +70,9 @@ public class TouchDisplayView extends View {
     Bitmap mBitmapG = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
     Bitmap mBitmapP = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_pink);
 
+    Bitmap mBitmapGBig = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_green);
+    Bitmap mBitmapPBig = BitmapFactory.decodeResource(getResources(), R.drawable.mallet_pink);
+
     //for detecting scaling movement
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1.f;
@@ -297,15 +300,28 @@ public class TouchDisplayView extends View {
                  * is stored.
                  */
 
+                //only one mallet is touched, so other one gets initialized
                 int index = event.getActionIndex();
                 int id = event.getPointerId(index);
 
                 if(id == malletDown.id) {
                     malletDown.init = true;
+                    malletDown.id = 6;
                 }
                 if(id == malletUp.id) {
                     malletUp.init = true;
+                    malletUp.id = 7;
                 }
+
+                //trying to remove non-player-pointer   //TODO?
+                try {
+                    mTouches.remove(id);
+                } catch (IndexOutOfBoundsException e) {
+                    //do nothing
+                    Log.i("mäh", "määäh");
+                }
+
+                Log.i("mTocuhes.size", Integer.toString(mTouches.size()));
 
                 break;
             }
@@ -334,10 +350,11 @@ public class TouchDisplayView extends View {
                     TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
                     try {
                         mTouches.remove(id);
-                    } catch (IndexOutOfBoundsException e) {
+                        mTouches.add(id, data);
+                    } catch (IndexOutOfBoundsException e) { //TODO?
                         // do nothing
+                        Log.i("pEW", "PEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW");
                     }
-                    mTouches.add(id, data);
 
                 }
 
@@ -370,6 +387,8 @@ public class TouchDisplayView extends View {
             malletRadius = Math.round(mBitmapG.getHeight()*scale/3);
             mBitmapG = Bitmap.createScaledBitmap(mBitmapG, malletRadius *2, malletRadius *2,false);
             mBitmapP = Bitmap.createScaledBitmap(mBitmapP, malletRadius *2, malletRadius *2,false);
+            mBitmapGBig = Bitmap.createScaledBitmap(mBitmapG, malletRadius *3, malletRadius *3,false);
+            mBitmapPBig = Bitmap.createScaledBitmap(mBitmapP, malletRadius *3, malletRadius *3,false);
 
 
             //setting appropriate points
@@ -477,16 +496,32 @@ public class TouchDisplayView extends View {
      */
     protected void drawCircle(Canvas canvas, TouchPoint data) {
         Bitmap curBitmap;
+        boolean bigMallet = false;
+        if(data.radius != malletRadius) {
+            bigMallet = true;
+        }
         if(data == malletUp & !mUpTouch) {
             //only one circle in the upper region of the board
             //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mPaint);
             //canvas.drawBitmap(mBitmapP, data.x+data.radius, data.y+data.radius, mPaint);
-            curBitmap = mBitmapP;
+            if(bigMallet) {
+                curBitmap = mBitmapPBig;
+
+            } else {
+                curBitmap = mBitmapP;
+            }
+
+
         } else if(data == malletDown & !mDownTouch) {
             //only one circle in the down region of the board
             //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mPaint);
             //canvas.drawBitmap(mBitmapG, data.x, data.y, mPaint);
-            curBitmap = mBitmapG;
+            if(bigMallet) {
+                curBitmap = mBitmapGBig;
+
+            } else {
+                curBitmap = mBitmapG;
+            }
         } else return;
         canvas.drawBitmap(curBitmap, data.x - data.radius, data.y - data.radius, mPaint);
     }
@@ -738,9 +773,9 @@ public class TouchDisplayView extends View {
             // Don't let the object get too small or too large.
             mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
 
-            Log.i("scaleFactor", Float.toString(mScaleFactor));
+            //Log.i("scaleFactor", Float.toString(mScaleFactor));
 
-            if (mTouches.size() > 3) {
+            if (mTouches.size() >= 3) {
                 scalingMallet();
             }
 
@@ -756,7 +791,7 @@ public class TouchDisplayView extends View {
     private void scalingMallet() {
         scaleList.add(mScaleFactor);
 
-        if(scaleList.size() > 3) {
+        if(scaleList.size() > 25) {
             boolean up,down = false;
             up = false;
             for (int i = 0; i < mTouches.size(); i++) {
@@ -783,8 +818,6 @@ public class TouchDisplayView extends View {
 
      */
     private void scaling(TouchPoint mallet) {
-        float val = scaleList.getLast() - scaleList.getFirst();
-        //if(val < 1) {
             if(mallet.radius == malletRadius){
                 mallet.radius =  malletRadius * (float)1.5;
                 mallet.gs = display.widthPixels / 5;
@@ -794,7 +827,6 @@ public class TouchDisplayView extends View {
                 mallet.ge = 3 * display.widthPixels / 4;
                 mallet.gs = display.widthPixels / 4;
             }
-        //}
 
     }
 
