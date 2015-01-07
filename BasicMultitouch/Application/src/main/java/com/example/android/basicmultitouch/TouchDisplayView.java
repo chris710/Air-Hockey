@@ -139,8 +139,8 @@ public class TouchDisplayView extends View {
         //puck size
         public float radius;
         //puck dynamics
-        public float verticalMov;
-        public float horizontalMov;
+        private float verticalMov;
+        private float horizontalMov;
 
         //petty constructor
         Puck(float x, float y) {
@@ -150,7 +150,31 @@ public class TouchDisplayView extends View {
             this.horizontalMov = 0;
         }
 
-        void reset() {
+        public float getVerticalMov() {
+            return this.verticalMov;
+        }
+
+        public float getHorizontalMov() {
+            return this.horizontalMov;
+        }
+
+        public void setVerticalMov(float newValue) {
+            if(newValue>10) {
+                this.verticalMov = 10;
+            } else {
+                this.verticalMov = newValue;
+            }
+        }
+
+        public void setHorizontalMov(float newValue) {
+            if(newValue>10) {
+                this.horizontalMov = 10;
+            } else {
+                this.horizontalMov = newValue;
+            }
+        }
+
+        public void reset() {
             this.x = display.widthPixels / 2;
             this.y = display.heightPixels / 2;
             this.verticalMov = 0;
@@ -336,7 +360,7 @@ public class TouchDisplayView extends View {
 
         if(!mFirstTouch && mInitialDraw){
             //setting scale
-            scale = display.scaledDensity;
+            scale = display.density;
 
 
             // coordinates for drawing if there was no touch yet
@@ -567,33 +591,34 @@ public class TouchDisplayView extends View {
      */
     private void puckPhys(TouchPoint data) {
         float  power = checkCollision(data);
-        double friction = 0.98;
+        Log.i("Power: ",Float.toString(power/powerReduction));
+        float friction = 0.98f;
 
         if (power != -1) {  //there is a collision
-            puck.horizontalMov = power/powerReduction*(puck.x - data.x );   //determining puck speed changes
-            puck.verticalMov = power/powerReduction*(puck.y - data.y);
+            puck.setHorizontalMov(power/powerReduction*(puck.x - data.x ));   //determining puck speed changes
+            puck.setVerticalMov(power/powerReduction*(puck.y - data.y));
 
         }
         else {  //slow down cowboy
-            if(puck.horizontalMov>0  || puck.horizontalMov<0) puck.horizontalMov *= friction;
+            if(puck.getHorizontalMov()>0  || puck.getHorizontalMov()<0) puck.setHorizontalMov(puck.getHorizontalMov() * friction);
             //if(puck.horizontalMov<0) puck.horizontalMov*=0.9;
-            if(puck.verticalMov>0 || puck.verticalMov<0) puck.verticalMov *= friction;
+            if(puck.getVerticalMov()>0 || puck.getVerticalMov()<0) puck.setVerticalMov(puck.getVerticalMov() * friction);
             //if(puck.verticalMov<0) puck.verticalMov*=0.9;
         }
-       /* Log.i("hor: ", Float.toString(puck.horizontalMov));
-        Log.i("ver: ", Float.toString(puck.verticalMov));*/
+        //Log.i("hor: ", Float.toString(puck.getHorizontalMov()));
+        //Log.i("ver: ", Float.toString(puck.getVerticalMov()));
 
         //change puck position
-        puck.x += puck.horizontalMov;
-        puck.y += puck.verticalMov;
+        puck.x += puck.getHorizontalMov();
+        puck.y += puck.getVerticalMov();
 
         //boundaries & goals
         if (puck.x-puck.radius < 0 ) {  //left edge
-            puck.horizontalMov *= -1;
+            puck.setHorizontalMov(puck.getHorizontalMov() * -1);
             puck.x = puck.radius;
         }
         if (puck.x+puck.radius > display.widthPixels) {     //right edge
-            puck.horizontalMov *= -1;
+            puck.setHorizontalMov(puck.getHorizontalMov() * -1);
             puck.x = display.widthPixels - puck.radius;
         }
         if (puck.y-puck.radius < 0 ) {  //upper edge
@@ -602,22 +627,19 @@ public class TouchDisplayView extends View {
                 float nx = puck.x - malletUp.gs;
                 float ny = puck.y - 0;
                 float length = (float)Math.sqrt(nx * nx + ny * ny);
-                //nx /= length;
-                //ny /= length;
-                //float projection = 2*(puck.horizontalMov * nx + puck.verticalMov * ny);
 
-                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
-                puck.horizontalMov -= projection * nx/powerReduction;
-                puck.verticalMov -= projection * ny/powerReduction;
+                float projection = 2*((puck.getHorizontalMov()* nx + puck.getVerticalMov()* ny) / length);
+                puck.setHorizontalMov(puck.getHorizontalMov() - projection * nx/powerReduction);
+                puck.setVerticalMov(puck.getVerticalMov() - projection * ny/powerReduction);
             } else if ((puck.x + puck.radius>malletUp.ge && puck.x<malletUp.ge) ) { //angled bounce from right corner
                 float nx = puck.x - malletUp.ge;
                 float ny = puck.y - 0;
                 float length = (float)Math.sqrt(nx * nx + ny * ny);
-                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
-                puck.horizontalMov -= projection * nx/powerReduction;
-                puck.verticalMov -= projection * ny/powerReduction;
+                float projection = 2*((puck.getHorizontalMov()* nx + puck.getVerticalMov()* ny) / length);
+                puck.setHorizontalMov(puck.getHorizontalMov() - projection * nx/powerReduction);
+                puck.setVerticalMov(puck.getVerticalMov() - projection * ny/powerReduction);
             } else if( !( puck.x - puck.radius > malletUp.gs && puck.x + puck.radius < malletUp.ge) ) {        //not in a goal
-                puck.verticalMov *= -1;
+                puck.setVerticalMov(puck.getVerticalMov() * -1);
                 puck.y = puck.radius;
             }   //in other case go smoothly through the goal
 
@@ -631,18 +653,18 @@ public class TouchDisplayView extends View {
                 float nx = puck.x - malletDown.gs;
                 float ny = puck.y - display.heightPixels;
                 float length = (float)Math.sqrt(nx * nx + ny * ny);
-                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
-                puck.horizontalMov -= projection * nx/powerReduction;
-                puck.verticalMov -= projection * ny/powerReduction;
+                float projection = 2*((puck.getHorizontalMov()* nx + puck.getVerticalMov()* ny) / length);
+                puck.setHorizontalMov(puck.getHorizontalMov() - projection * nx/powerReduction);
+                puck.setVerticalMov(puck.getVerticalMov() - projection * ny/powerReduction);
             } else if ((puck.x + puck.radius>malletDown.ge && puck.x<malletDown.ge) ) { //angled bounce from right corner
                 float nx = puck.x - malletDown.ge;
                 float ny = puck.y - display.heightPixels;
                 float length = (float)Math.sqrt(nx * nx + ny * ny);
-                float projection = 2*((puck.horizontalMov* nx + puck.verticalMov* ny) / length);
-                puck.horizontalMov -= projection * nx/powerReduction;
-                puck.verticalMov -= projection * ny/powerReduction;
+                float projection = 2*((puck.getHorizontalMov()* nx + puck.getVerticalMov()* ny) / length);
+                puck.setHorizontalMov(puck.getHorizontalMov() - projection * nx/powerReduction);
+                puck.setVerticalMov(puck.getVerticalMov() - projection * ny/powerReduction);
             } else if( !( puck.x - puck.radius > malletDown.gs && puck.x + puck.radius < malletDown.ge) ) {        //not in a goal
-                puck.verticalMov *= -1;
+                puck.setVerticalMov(puck.getVerticalMov() * -1);
                 puck.y = display.heightPixels - puck.radius;
             }   //in other case go smoothly through the goal
 
