@@ -47,10 +47,6 @@ public class TouchDisplayView extends View {
     private boolean mFirstTouch = false;    //initial state, before any interaction
     private boolean mInitialDraw = true;   //since onDraw sometimes gets used two times, this is for security measures
 
-    // Only one touch per side of board
-    private boolean mUpTouch = false;
-    private boolean mDownTouch = false;
-
     // the points of where the mallets are right now
     public TouchPoint malletUp;
     public TouchPoint malletDown;
@@ -222,7 +218,7 @@ public class TouchDisplayView extends View {
             // Let the ScaleGestureDetector inspect all events.
             mScaleDetector.onTouchEvent(event);
             mGestureDetector.onTouchEvent(event);
-            Log.i("touchevent", "down");
+            //Log.i("touchevent", "down");
         }
 
 
@@ -453,7 +449,6 @@ public class TouchDisplayView extends View {
             mPaint.setColor(COLORS[3]); //make orange
             canvas.drawCircle(puck.x, puck.y, puck.radius, mPaint); //drawing puck
         }
-
     }
 
     /*
@@ -511,7 +506,7 @@ public class TouchDisplayView extends View {
         if(data.radius != malletRadius) {
             bigMallet = true;
         }
-        if(data == malletUp & !mUpTouch) {
+        if(data == malletUp) {
             //only one circle in the upper region of the board
             //canvas.drawBitmap(mBitmapP, data.x - data.radius, data.y - data.radius, mPaint);
             //canvas.drawBitmap(mBitmapP, data.x+data.radius, data.y+data.radius, mPaint);
@@ -523,7 +518,7 @@ public class TouchDisplayView extends View {
             }
 
 
-        } else if(data == malletDown & !mDownTouch) {
+        } else if(data == malletDown) {
             //only one circle in the down region of the board
             //canvas.drawBitmap(mBitmapG, data.x - data.radius, data.y - data.radius, mPaint);
             //canvas.drawBitmap(mBitmapG, data.x, data.y, mPaint);
@@ -560,8 +555,8 @@ public class TouchDisplayView extends View {
                 }
                 //removing and setting the point with the newly set attributes
                 mTouches.remove(i);
-                
                 mTouches.add(i, data);
+
             }
 
             //resets mallets when no one touches the display
@@ -845,7 +840,7 @@ public class TouchDisplayView extends View {
     private class SimpleGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.i("double", "taaap");
+            //Log.i("double", "taaap");
             if(friction == standardFriction) {
                 friction =+ friction;
             } else {
