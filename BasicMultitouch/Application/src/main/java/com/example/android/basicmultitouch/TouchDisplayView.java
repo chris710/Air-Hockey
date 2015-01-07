@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -64,6 +65,8 @@ public class TouchDisplayView extends View {
     public float scale;
     Integer malletRadius;   //radius of a mallet
     Integer powerReduction = 90;    //slowing puck down coefficient
+    float friction = 0.98f;     //for physics of the puck
+    float standardFriction = 0.98f; //for comparing purposes later on
 
 
     //bitmaps
@@ -76,6 +79,8 @@ public class TouchDisplayView extends View {
     //for detecting scaling movement
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1.f;
+    private GestureDetector mGestureDetector;
+
 
     /**
      * Holds data related to a touch pointer, including its current position
@@ -195,6 +200,7 @@ public class TouchDisplayView extends View {
         mTouches = new LinkedList<TouchPoint>();
         DisplayMetrics display = this.getContext().getResources().getDisplayMetrics();
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        mGestureDetector = new GestureDetector(context, new SimpleGestureListener());
 
         initialisePaint();
     }
@@ -203,8 +209,22 @@ public class TouchDisplayView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        // Let the ScaleGestureDetector inspect all events.
-        mScaleDetector.onTouchEvent(event);
+        int index = event.getActionIndex();
+        int id = event.getPointerId(index);
+        float y= event.getY(index);
+
+        //to differentiate the different areas inside the game to upper and down area
+        if(y < display.heightPixels/2) {
+            // Let the ScaleGestureDetector inspect all events.
+            mScaleDetector.onTouchEvent(event);
+            mGestureDetector.onTouchEvent(event);
+        } else {
+            // Let the ScaleGestureDetector inspect all events.
+            mScaleDetector.onTouchEvent(event);
+            mGestureDetector.onTouchEvent(event);
+            Log.i("touchevent", "down");
+        }
+
 
         final int action = event.getAction();
 
@@ -223,7 +243,6 @@ public class TouchDisplayView extends View {
                  * within the MotionEvent object.
                  */
 
-                int id = event.getPointerId(0);
                 TouchPoint data = new TouchPoint(event.getX(0), event.getY(0), id);
                 /*
                  * Store the data under its pointer identifier. The pointer
@@ -254,8 +273,6 @@ public class TouchDisplayView extends View {
                  * extract the index at which the data for this particular event
                  * is stored.
                 */
-                int index = event.getActionIndex();
-                int id = event.getPointerId(index);
 
                 TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
 
@@ -301,8 +318,6 @@ public class TouchDisplayView extends View {
                  */
 
                 //only one mallet is touched, so other one gets initialized
-                int index = event.getActionIndex();
-                int id = event.getPointerId(index);
 
                 if(id == malletDown.id) {
                     malletDown.init = true;
@@ -318,10 +333,7 @@ public class TouchDisplayView extends View {
                     mTouches.remove(id);
                 } catch (IndexOutOfBoundsException e) {
                     //do nothing
-                    Log.i("mäh", "määäh");
                 }
-
-                Log.i("mTocuhes.size", Integer.toString(mTouches.size()));
 
                 break;
             }
@@ -343,17 +355,16 @@ public class TouchDisplayView extends View {
                  * This identifier is used to keep track of a pointer across
                  * events.
                  */
-                for (int index = 0; index < event.getPointerCount(); index++) {
+                for ( index = 0; index < event.getPointerCount(); index++) {
                     // get pointer id for data stored at this index
-                    int id = event.getPointerId(index);
+                    id = event.getPointerId(index);
 
                     TouchPoint data = new TouchPoint(event.getX(index), event.getY(index), id);
                     try {
                         mTouches.remove(id);
                         mTouches.add(id, data);
-                    } catch (IndexOutOfBoundsException e) { //TODO?
+                    } catch (IndexOutOfBoundsException e) {
                         // do nothing
-                        Log.i("pEW", "PEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW");
                     }
 
                 }
@@ -549,6 +560,7 @@ public class TouchDisplayView extends View {
                 }
                 //removing and setting the point with the newly set attributes
                 mTouches.remove(i);
+                
                 mTouches.add(i, data);
             }
 
@@ -626,8 +638,7 @@ public class TouchDisplayView extends View {
      */
     private void puckPhys(TouchPoint data) {
         float  power = checkCollision(data);
-        Log.i("Power: ",Float.toString(power/powerReduction));
-        float friction = 0.98f;
+        //Log.i("Power: ",Float.toString(power/powerReduction));
 
         if (power != -1) {  //there is a collision
             puck.setHorizontalMov(power/powerReduction*(puck.x - data.x ));   //determining puck speed changes
@@ -762,7 +773,7 @@ public class TouchDisplayView extends View {
     }
 
     /*
-    listener for cathcing scaling movements of the players
+    listener for catching scaling movements of the players
      */
     private class ScaleListener
             extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -772,8 +783,6 @@ public class TouchDisplayView extends View {
 
             // Don't let the object get too small or too large.
             mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-
-            //Log.i("scaleFactor", Float.toString(mScaleFactor));
 
             if (mTouches.size() >= 3) {
                 scalingMallet();
@@ -828,6 +837,23 @@ public class TouchDisplayView extends View {
                 mallet.gs = display.widthPixels / 4;
             }
 
+    }
+
+    /*
+    for handling doubleTap-gestures and reacting to them
+     */
+    private class SimpleGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.i("double", "taaap");
+            if(friction == standardFriction) {
+                friction =+ friction;
+            } else {
+                friction = standardFriction;
+            }
+
+            return true;
+        }
     }
 
 }
