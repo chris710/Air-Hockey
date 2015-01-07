@@ -25,6 +25,14 @@ Interface:
 
 Process sth:
 
-Mechanisms and solutions used:
+Mechanisms and solutions used: multi-touch gestures capabilities; use the full potential of touchscreen (preferably large and hi-res); 
 
 Summary:
+
+Why are we using computational resources? One of the many reason is entertainment. And the richer the mechanisms used the the richer the experience. It's particularly important
+to socialize with people in person. And sharing these experiences can be enhanced by using interactive games like this the evoke the spirit of competition and to add to the interaction.
+
+multi-player; understanding different aspects of direct manipulation; can see the direct results of their acts without latency; 
+can observe each others emotions and reactions and strengthen social bonds this way; shared experience; same time, same place; co-located and synchronous; 
+face-to-face; private input area (half of the screen); obvious boundary (line in the middle); occlusion; restricted screen space; direct communication between players;
+simultaneous actions and reactions; different tactics to be implemented; strict user differentiation (sides of the screen); focus; awareness; orientation; social gaming
